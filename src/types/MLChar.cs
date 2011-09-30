@@ -18,7 +18,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="Val">A character string array</param>
 		public MLChar( string Name, string Val ) :
-			this( Name, new int[] { 1, Val.Length } , MLArray.mxCHAR_CLASS, 0 )
+			this( Name, new int[] { Val.Length == 0 ? 0 : 1, Val.Length } , MLArray.mxCHAR_CLASS, 0 )
 		{
 			Set( Val );
 		}

@@ -465,7 +465,7 @@ namespace csmatio.io
 			{
 				_data = Data;
 				_data.Rewind();
-                _compressed = Data.Limit <= 4;
+				_compressed = (Data.Limit >= 1) && (Data.Limit <= 4);
 				_padding = GetPadding( Data.Limit, _compressed );
 			}
 

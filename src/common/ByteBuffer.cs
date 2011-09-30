@@ -181,7 +181,7 @@ namespace csmatio.common
 		{
 			if( length > Remaining() )
 				throw new OverflowException("There are fewer than " + length + " bytes remaining in this buffer." );
-			if(  offset < 0 || offset >= dst.Length || length < 0 || length > dst.Length-offset )
+			if(  offset < 0 || offset > dst.Length || length < 0 || length > dst.Length-offset )
 				throw new IndexOutOfRangeException( "The preconditions on the offset and lenght parameters do not hold for this buffer." );
 
 			System.Array.Copy( _bytes, _pos, dst, offset, length );
