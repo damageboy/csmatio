@@ -489,10 +489,14 @@ namespace csmatio.io
         /// <returns>String retrieved from byte array</returns>
         private string ZeroEndByteArrayToString(byte[] bytes)
 		{
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bytes.Length; i++ )
-                sb.Append((char)bytes[i]);
-            return sb.ToString();
+			StringBuilder sb = new StringBuilder();
+			foreach (byte b in bytes)
+			{
+				if (b == 0)
+					break;
+				sb.Append((char)b);
+			}
+			return sb.ToString();
 		}
 
         /// <summary>

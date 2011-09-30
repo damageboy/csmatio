@@ -68,7 +68,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\csmatio\csmatio.csproj">
+    <ProjectReference Include="..\src\csmatio.csproj">
       <Project>{D6EB17BF-9074-484F-9950-E06169A3C39D}</Project>
       <Name>csmatio</Name>
     </ProjectReference>
