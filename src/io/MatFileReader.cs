@@ -364,6 +364,21 @@ namespace csmatio.io
                             (ByteStorageSupport)mlArray);
                     }
                     break;
+				case MLArray.mxSINGLE_CLASS:
+					mlArray = new MLSingle(name, dims, type, attributes);
+					//read real
+					tag = new ISMatTag(buf);
+					tag.ReadToByteBuffer(((MLNumericArray<double>)mlArray).RealByteBuffer,
+						(ByteStorageSupport)mlArray);
+
+					// read complex
+					if (mlArray.IsComplex)
+					{
+						tag = new ISMatTag(buf);
+						tag.ReadToByteBuffer(((MLNumericArray<double>)mlArray).ImaginaryByteBuffer,
+						(ByteStorageSupport)mlArray);
+					}
+					break;
                 case MLArray.mxUINT8_CLASS:
                     mlArray = new MLUInt8(name, dims, type, attributes);
                     //read real
