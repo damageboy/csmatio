@@ -201,7 +201,9 @@ namespace csmatio.io
 					}
 					break;
                 case MLArray.mxSINGLE_CLASS:
-                    tag = new OSArrayTag(MatDataTypes.miDOUBLE,
+					// TODO: check: 
+					// Why ist it MLNumericArray<double> and not MLNumericArray<single> ?
+					tag = new OSArrayTag(MatDataTypes.miDOUBLE,
                         ((MLNumericArray<double>)array).RealByteBuffer);
                     tag.WriteTo(bw);
                     if (array.IsComplex)
@@ -223,7 +225,10 @@ namespace csmatio.io
 					}
 					break;
 				case MLArray.mxINT8_CLASS:
-					tag = new OSArrayTag( MatDataTypes.miINT16, 
+					// TODO: check: 
+					// - Why ist it MLNumericArray<short> and not MLNumericArray<sbyte> ?
+					// - MatFileReader.ReadMatrix() uses MLNumericArray<byte> !
+					tag = new OSArrayTag(MatDataTypes.miINT16, 
 						((MLNumericArray<short>)array).RealByteBuffer );
 					tag.WriteTo( bw );
 					if( array.IsComplex )

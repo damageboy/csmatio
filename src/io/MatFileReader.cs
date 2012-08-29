@@ -365,6 +365,8 @@ namespace csmatio.io
                     }
                     break;
 				case MLArray.mxSINGLE_CLASS:
+					// TODO: check: 
+					// Why ist it MLNumericArray<double> and not MLNumericArray<single> ?
 					mlArray = new MLSingle(name, dims, type, attributes);
 					//read real
 					tag = new ISMatTag(buf);
@@ -379,62 +381,135 @@ namespace csmatio.io
 						(ByteStorageSupport)mlArray);
 					}
 					break;
-                case MLArray.mxUINT8_CLASS:
-                    mlArray = new MLUInt8(name, dims, type, attributes);
+				case MLArray.mxUINT8_CLASS:
+					mlArray = new MLUInt8(name, dims, type, attributes);
+					//read real
+					tag = new ISMatTag(buf);
+					tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).RealByteBuffer,
+						(ByteStorageSupport)mlArray);
+
+					// read complex
+					if (mlArray.IsComplex)
+					{
+						tag = new ISMatTag(buf);
+						tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).ImaginaryByteBuffer,
+							(ByteStorageSupport)mlArray);
+					}
+					break;
+				case MLArray.mxINT8_CLASS:
+					// TODO: check: 
+					// - Why is it MLNumericArray<short> and not MLNumericArray<sbyte> ?
+					// - MatFileWriter.WriteMatrix() uses MLNumericArray<short> !
+					mlArray = new MLInt8(name, dims, type, attributes);
+					//read real
+					tag = new ISMatTag(buf);
+					tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).RealByteBuffer,
+						(ByteStorageSupport)mlArray);
+
+					// read complex
+					if (mlArray.IsComplex)
+					{
+						tag = new ISMatTag(buf);
+						tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).ImaginaryByteBuffer,
+							(ByteStorageSupport)mlArray);
+					}
+					break;
+				case MLArray.mxUINT16_CLASS:
+					mlArray = new MLUInt16(name, dims, type, attributes);
+					//read real
+					tag = new ISMatTag(buf);
+
+					tag.ReadToByteBuffer(((MLNumericArray<ushort>)mlArray).RealByteBuffer,
+						(ByteStorageSupport)mlArray);
+
+					// read complex
+					if (mlArray.IsComplex)
+					{
+						tag = new ISMatTag(buf);
+						tag.ReadToByteBuffer(((MLNumericArray<ushort>)mlArray).ImaginaryByteBuffer,
+							(ByteStorageSupport)mlArray);
+					}
+					break;
+				case MLArray.mxINT16_CLASS:
+					mlArray = new MLInt16(name, dims, type, attributes);
+					//read real
+					tag = new ISMatTag(buf);
+					tag.ReadToByteBuffer(((MLNumericArray<short>)mlArray).RealByteBuffer,
+						(ByteStorageSupport)mlArray);
+
+					// read complex
+					if (mlArray.IsComplex)
+					{
+						tag = new ISMatTag(buf);
+						tag.ReadToByteBuffer(((MLNumericArray<short>)mlArray).ImaginaryByteBuffer,
+							(ByteStorageSupport)mlArray);
+					}
+					break;
+				case MLArray.mxUINT32_CLASS:
+					mlArray = new MLUInt32(name, dims, type, attributes);
+					//read real
+					tag = new ISMatTag(buf);
+
+					tag.ReadToByteBuffer(((MLNumericArray<uint>)mlArray).RealByteBuffer,
+						(ByteStorageSupport)mlArray);
+
+					// read complex
+					if (mlArray.IsComplex)
+					{
+						// TODO: check: 
+						// Why is it MLNumericArray<byte> and not MLNumericArray<uint> ?
+						tag = new ISMatTag(buf);
+						tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).ImaginaryByteBuffer,
+							(ByteStorageSupport)mlArray);
+					}
+					break;
+				case MLArray.mxINT32_CLASS:
+					mlArray = new MLInt32(name, dims, type, attributes);
+					//read real
+					tag = new ISMatTag(buf);
+					tag.ReadToByteBuffer(((MLNumericArray<int>)mlArray).RealByteBuffer,
+						(ByteStorageSupport)mlArray);
+
+					// read complex
+					if (mlArray.IsComplex)
+					{
+						// TODO: check: 
+						// Why is it MLNumericArray<byte> and not MLNumericArray<int> ?
+						tag = new ISMatTag(buf);
+						tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).ImaginaryByteBuffer,
+							(ByteStorageSupport)mlArray);
+					}
+					break;
+				case MLArray.mxUINT64_CLASS:
+					// TODO: check: 
+					// - Why is it MLNumericArray<byte> and not MLNumericArray<ulong> ?
+					mlArray = new MLUInt64(name, dims, type, attributes);
                     //read real
                     tag = new ISMatTag(buf);
-                    tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).RealByteBuffer,
+					tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).RealByteBuffer,
                         (ByteStorageSupport)mlArray);
 
                     // read complex
                     if (mlArray.IsComplex)
                     {
-                        tag = new ISMatTag(buf);
-                        tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).ImaginaryByteBuffer,
-                            (ByteStorageSupport)mlArray);
-                    }
-                    break;
-                case MLArray.mxINT8_CLASS:
-                    mlArray = new MLInt8(name, dims, type, attributes);
-                    //read real
-                    tag = new ISMatTag(buf);
-                    tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).RealByteBuffer,
-                        (ByteStorageSupport)mlArray);
-
-                    // read complex
-                    if (mlArray.IsComplex)
-                    {
-                        tag = new ISMatTag(buf);
-                        tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).ImaginaryByteBuffer,
-                            (ByteStorageSupport)mlArray);
-                    }
-                    break;
-                case MLArray.mxUINT64_CLASS:
-                    mlArray = new MLUInt64(name, dims, type, attributes);
-                    //read real
-                    tag = new ISMatTag(buf);
-                    tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).RealByteBuffer,
-                        (ByteStorageSupport)mlArray);
-
-                    // read complex
-                    if (mlArray.IsComplex)
-                    {
-                        tag = new ISMatTag(buf);
+						tag = new ISMatTag(buf);
                         tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).ImaginaryByteBuffer,
                             (ByteStorageSupport)mlArray);
                     }
                     break;
                 case MLArray.mxINT64_CLASS:
-                    mlArray = new MLInt64(name, dims, type, attributes);
+					// TODO: check: 
+					// Why is it MLNumericArray<byte> and not MLNumericArray<long> ?
+					mlArray = new MLInt64(name, dims, type, attributes);
                     //read real
                     tag = new ISMatTag(buf);
-                    tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).RealByteBuffer,
+					tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).RealByteBuffer,
                         (ByteStorageSupport)mlArray);
 
                     // read complex
                     if (mlArray.IsComplex)
                     {
-                        tag = new ISMatTag(buf);
+						tag = new ISMatTag(buf);
                         tag.ReadToByteBuffer(((MLNumericArray<byte>)mlArray).ImaginaryByteBuffer,
                             (ByteStorageSupport)mlArray);
                     }

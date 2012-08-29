@@ -1,3 +1,18 @@
+# CSMatIO #
+
+CSMatIO is a .NET Library to read, write, and manipulate Matlab binary MAT-files
+written by David Zier. He published his code on
+[Matlab Central](http://www.mathworks.com/matlabcentral/fileexchange/16319)
+
+I found his work really useful. However it has some bugs and is somehow incomplete. I try to provide some fixes and enhancements here.
+
+toaaot
+
+
+------------------------------------------------------------------------
+
+# Original Readme from David Zier #
+
 CSMatIO is a .NET Library to read, write, and manipulate Matlab binary
 MAT-files.
 
@@ -20,9 +35,33 @@ Enjoy!
 
 David A. Zier
 
-CHANGE LOG:
-[10.09.2007]
-Currently supproted data types are:
+------------------------------------------------------------------------
+
+# CHANGE LOG #
+
+## r6, 2012-08-29 ##
+
+support for reading matrix types added: mxUINT16, mxINT16, mxUINT32, mxINT32
+readme.txt -> readme.md
+
+## r5, 2012-03-27 ##
+
+support for reading "single" arrays added (tip on [Matlab Central](http://www.mathworks.com/matlabcentral/fileexchange/16319))
+
+## r4, 2011-10-01 ##
+
+FIX: saving empty strings was broken.
+
+## r3, 2011-09-30 ##
+
+FIX: name-based access to struct-array fields was partially broken due to string handling bug in MatFileReader.cs
+
+## r2, 2007-09-10 ##
+
+checked in Davids original code.
+
+Currently supported data types are:
+
 + Double array
 + Single array
 + Char array
@@ -37,5 +76,3 @@ Currently supproted data types are:
 + UInt32 array
 + Int64 array
 + UInt64 array
-
-
