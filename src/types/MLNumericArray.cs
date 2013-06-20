@@ -79,7 +79,7 @@ namespace csmatio.types
         {
             get 
             { 
-                return (int)((uint)(MLArray.mxDOUBLE_CLASS & MLArray.mtFLAG_TYPE) 
+                return (int)((uint)(base._type & MLArray.mtFLAG_TYPE) 
                     | (uint)(base._attributes & 0xFFFFFF00)); 
             }
         }

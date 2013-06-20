@@ -39,6 +39,18 @@ David A. Zier
 
 # CHANGE LOG #
 
+## r7, 2013-06-20 ##
+
+fixed MLNumericArray.Flags: should return
+
+~~~~~~~
+(int)((uint)(base._type & MLArray.mtFLAG_TYPE) | (uint)(base._attributes & 0xFFFFFF00))
+~~~~~~~
+
+or it will make all the numberic data written as Double.
+
+(contributed 2013-06-19 by Anton on [Matlab Central](http://www.mathworks.com/matlabcentral/fileexchange/16319))
+
 ## r6, 2012-08-29 ##
 
 support for reading matrix types added: mxUINT16, mxINT16, mxUINT32, mxINT32
