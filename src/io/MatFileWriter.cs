@@ -201,15 +201,13 @@ namespace csmatio.io
 					}
 					break;
                 case MLArray.mxSINGLE_CLASS:
-					// TODO: check: 
-					// Why ist it MLNumericArray<double> and not MLNumericArray<single> ?
-					tag = new OSArrayTag(MatDataTypes.miDOUBLE,
-                        ((MLNumericArray<double>)array).RealByteBuffer);
+					tag = new OSArrayTag(MatDataTypes.miSINGLE,
+                        ((MLNumericArray<float>)array).RealByteBuffer);
                     tag.WriteTo(bw);
                     if (array.IsComplex)
                     {
-                        tag = new OSArrayTag(MatDataTypes.miDOUBLE,
-                            ((MLNumericArray<double>)array).ImaginaryByteBuffer);
+                        tag = new OSArrayTag(MatDataTypes.miSINGLE,
+                            ((MLNumericArray<float>)array).ImaginaryByteBuffer);
                         tag.WriteTo(bw);
                     }
                     break;

@@ -365,19 +365,17 @@ namespace csmatio.io
                     }
                     break;
 				case MLArray.mxSINGLE_CLASS:
-					// TODO: check: 
-					// Why ist it MLNumericArray<double> and not MLNumericArray<single> ?
 					mlArray = new MLSingle(name, dims, type, attributes);
 					//read real
 					tag = new ISMatTag(buf);
-					tag.ReadToByteBuffer(((MLNumericArray<double>)mlArray).RealByteBuffer,
+					tag.ReadToByteBuffer(((MLNumericArray<float>)mlArray).RealByteBuffer,
 						(ByteStorageSupport)mlArray);
 
 					// read complex
 					if (mlArray.IsComplex)
 					{
 						tag = new ISMatTag(buf);
-						tag.ReadToByteBuffer(((MLNumericArray<double>)mlArray).ImaginaryByteBuffer,
+						tag.ReadToByteBuffer(((MLNumericArray<float>)mlArray).ImaginaryByteBuffer,
 						(ByteStorageSupport)mlArray);
 					}
 					break;

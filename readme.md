@@ -39,12 +39,19 @@ David A. Zier
 
 # CHANGE LOG #
 
+## r8, 2013-11-22 ##
+
+FIXED sf ticket No.1: "problem with writing single prec array"
+read/write support for single-prec floats was completely broken
+
+(reported 2013-11-21 by Diego on [Matlab Central](http://www.mathworks.com/matlabcentral/fileexchange/16319))
+
 ## r7, 2013-06-20 ##
 
 fixed MLNumericArray.Flags: should return
 
 ~~~~~~~
-(int)((uint)(base._type & MLArray.mtFLAG_TYPE) | (uint)(base._attributes & 0xFFFFFF00))
+	(int)((uint)(base._type & MLArray.mtFLAG_TYPE) | (uint)(base._attributes & 0xFFFFFF00))
 ~~~~~~~
 
 or it will make all the numberic data written as Double.
