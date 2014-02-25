@@ -45,7 +45,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="vals">Two-dimensional array of values</param>
 		public MLSingle(string Name, float[][] vals)
-			: this(Name, Float2DToFloat(vals), vals.Length) { }
+			: this(Name, Helpers.Array2DTo1D<float>(vals), vals.Length) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -67,7 +67,7 @@ namespace csmatio.types
 		/// <param name="Real">array of arrays of float for <i>real</i> values</param>
 		/// <param name="Imag">array of arrays of float for <i>imaginary</i> values</param>
 		public MLSingle(string Name, float[][] Real, float[][] Imag)
-			: this(Name, Float2DToFloat(Real), Float2DToFloat(Imag), Real.Length) { }
+			: this(Name, Helpers.Array2DTo1D<float>(Real), Helpers.Array2DTo1D<float>(Imag), Real.Length) { }
 
 		/// <summary>
 		/// Creates a generic 1D array.
@@ -98,24 +98,6 @@ namespace csmatio.types
 				}
 			}
 			return result;
-		}
-
-		/// <summary>
-		/// Converts float[][] to float[]
-		/// </summary>
-		/// <param name="dd"></param>
-		/// <returns></returns>
-		private static float[] Float2DToFloat(float[][] dd)
-		{
-			float[] d = new float[dd.Length * dd[0].Length];
-			for (int n = 0; n < dd[0].Length; n++)
-			{
-				for (int m = 0; m < dd.Length; m++)
-				{
-					d[m + n * dd.Length] = dd[m][n];
-				}
-			}
-			return d;
 		}
 
 		/// <summary>

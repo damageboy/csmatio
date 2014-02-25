@@ -49,7 +49,7 @@ namespace csmatio.types
         /// <param name="vals">Two-dimensional array of values</param>
         public MLInt16(string Name, short[][] vals)
             :
-            this(Name, Short2DToShort(vals), vals.Length) { }
+			this(Name, Helpers.Array2DTo1D<short>(vals), vals.Length) { }
 
         /// <summary>
         /// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -73,7 +73,7 @@ namespace csmatio.types
         /// <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
         public MLInt16(string Name, short[][] Real, short[][] Imag)
             :
-            this(Name, Short2DToShort(Real), Short2DToShort(Imag), Real.Length) { }
+			this(Name, Helpers.Array2DTo1D<short>(Real), Helpers.Array2DTo1D<short>(Imag), Real.Length) { }
 
         /// <summary>
         /// Creates a generic byte array.
@@ -104,24 +104,6 @@ namespace csmatio.types
                 }
             }
             return result;
-        }
-
-        /// <summary>
-        /// Converts short[][] to short[]
-        /// </summary>
-        /// <param name="dd"></param>
-        /// <returns></returns>
-        private static short[] Short2DToShort(short[][] dd)
-        {
-            short[] d = new short[dd.Length * dd[0].Length];
-            for (int n = 0; n < dd[0].Length; n++)
-            {
-                for (int m = 0; m < dd.Length; m++)
-                {
-                    d[m + n * dd.Length] = dd[m][n];
-                }
-            }
-            return d;
         }
 
         /// <summary>

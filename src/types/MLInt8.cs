@@ -47,7 +47,7 @@ namespace csmatio.types
 		/// <param name="vals">Two-dimensional array of values</param>
         public MLInt8(string Name, sbyte[][] vals)
             :
-			this( Name, Byte2DToByte( vals ), vals.Length ) {}
+			this(Name, Helpers.Array2DTo1D<sbyte>(vals), vals.Length) { }
 
         /// <summary>
         /// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -71,7 +71,7 @@ namespace csmatio.types
         /// <param name="Imag">One-dimensional array of <c>byte</c> for <i>imaginary</i> values, packed by columns</param>
         public MLInt8(string Name, sbyte[][] Real, sbyte[][] Imag)
             :
-            this(Name, Byte2DToByte(Real), Byte2DToByte(Imag), Real.Length) { }
+			this(Name, Helpers.Array2DTo1D<sbyte>(Real), Helpers.Array2DTo1D<sbyte>(Imag), Real.Length) { }
 
 		/// <summary>
 		/// Creates a generic byte array.
@@ -102,24 +102,6 @@ namespace csmatio.types
 				}
 			}
 			return result;
-		}
-
-		/// <summary>
-		/// Converts byte[][] to byte[]
-		/// </summary>
-		/// <param name="dd"></param>
-		/// <returns></returns>
-        private static sbyte[] Byte2DToByte(sbyte[][] dd)
-		{
-            sbyte[] d = new sbyte[dd.Length * dd[0].Length];
-			for( int n = 0; n < dd[0].Length; n++ )
-			{
-				for( int m = 0; m < dd.Length; m++ )
-				{
-					d[m+n*dd.Length] = dd[m][n];
-				}
-			}
-			return d;
 		}
 
         /// <summary>

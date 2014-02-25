@@ -4,9 +4,9 @@ CSMatIO is a .NET Library to read, write, and manipulate Matlab binary MAT-files
 written by David Zier. He published his code on
 [Matlab Central](http://www.mathworks.com/matlabcentral/fileexchange/16319)
 
-I found his work really useful. However it has some bugs and is somehow incomplete. I try to provide some fixes and enhancements here.
+I found his work really useful. It had some bugs however, so I try to provide some fixes and enhancements here.
 
-toaaot
+Tobias
 
 
 ------------------------------------------------------------------------
@@ -38,6 +38,15 @@ David A. Zier
 ------------------------------------------------------------------------
 
 # CHANGE LOG #
+
+## r9, 2014-02-25 ##
+
+FIXED sf ticket No.6: "#6 zlib inflate broken?"
+
+- new version 1.10 of zlib.net.dll seems to fix the problem
+- new version 1.10 of zlib.net.dll has changed interface methods, so MatFileReader/MatFileWriter had to be adapted
+
+Replaced various helper methods that converted 2D to 1D arrays with one generic method from the new file "Helpers.cs".
 
 ## r8, 2013-11-22 ##
 

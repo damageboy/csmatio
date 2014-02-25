@@ -8,6 +8,7 @@ using csmatio.common;
 using csmatio.types;
 
 //using ICSharpCode.SharpZipLib.GZip;
+using zlib = ComponentAce.Compression.Libs.ZLib;
 
 namespace csmatio.io
 {
@@ -86,7 +87,7 @@ namespace csmatio.io
                     memstrm.Position = 0; // Rewind the stream
 
                     MemoryStream compressed = new MemoryStream();
-                    zlib.ZOutputStream zos = new zlib.ZOutputStream(compressed, zlib.zlibConst.Z_DEFAULT_COMPRESSION);
+                    zlib.ZOutputStream zos = new zlib.ZOutputStream(compressed, -1);
 
                     byte[] input = new byte[128];
                     int len = 0;
@@ -190,6 +191,7 @@ namespace csmatio.io
 
 					break;
 				case MLArray.mxDOUBLE_CLASS:
+					// TODO: Exception occurs here when trying to write a MLEmptyArray
 					tag = new OSArrayTag( MatDataTypes.miDOUBLE, 
 						((MLNumericArray<double>)array).RealByteBuffer );
 					tag.WriteTo( bw );

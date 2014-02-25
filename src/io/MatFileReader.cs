@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text;
 
-using zlib;
-
 using csmatio.common;
 using csmatio.types;
 
+using zlib = ComponentAce.Compression.Libs.ZLib;
 //using ICSharpCode.SharpZipLib.GZip;
 
 namespace csmatio.io
@@ -167,25 +166,32 @@ namespace csmatio.io
                 throw new MatlabIOException("Compressed buffer length miscalculated!");
             }
 
-            MemoryStream inflatedStream = new MemoryStream();
-            zlib.ZOutputStream zis = new ZOutputStream(inflatedStream);
-            //System.IO.Compression.GZipStream gzs = new GZipStream(deflatedStream, CompressionMode.Decompress, true);
+#if false
+			// test code!
+			byte[] byteBuffer = new byte[numOfBytes];
+			long pos = buf.Position;
+			int n = buf.Read(byteBuffer, 0, numOfBytes);
+			buf.Position = pos;
+			File.WriteAllBytes("DeflatedMatlabData.bin", byteBuffer);
+#endif
+			MemoryStream inflatedStream = new MemoryStream(numOfBytes);
 
-            byte[] data = new byte[128];
-            try
+			try
             {
-                int bytesTotal = 0;
-                int bytesRead = 0;
-                while (bytesTotal < numOfBytes )
-                {
-                    int len = Math.Min(data.Length, numOfBytes - bytesTotal);
-                    bytesRead = buf.Read(data, 0, len);
-                    if (bytesRead == 0)
-                        break;
-                    zis.Write(data, 0, bytesRead);
-                    bytesTotal += bytesRead;
-                }
-            }
+				// copy all the compressed bytes to a new stream.
+				byte[] compressedBytes = new byte[numOfBytes];
+				int numBytesRead = buf.Read(compressedBytes, 0, numOfBytes);
+				if (numBytesRead != numOfBytes)
+				{
+					throw new IOException("numBytesRead != numOfBytes");
+				}
+
+				// now use zlib on the compressedBytes
+				MemoryStream compressedStream = new MemoryStream(compressedBytes);
+				zlib.ZInputStream zis = new zlib.ZInputStream(compressedStream);
+				Helpers.CopyStream(zis, inflatedStream);
+				zis.Close();
+			}
             catch (IOException e)
             {
                 throw new MatlabIOException("Could not decompress data: " + e);
@@ -211,10 +217,14 @@ namespace csmatio.io
             ISMatTag tag = new ISMatTag(buf);
             switch (tag.Type)
             {
-                case MatDataTypes.miCOMPRESSED:
-                    // inflate and recur
-                    ReadData(Inflate(buf, tag.Size));
-                    break;
+				case MatDataTypes.miCOMPRESSED:
+					// inflate and recur
+					{
+						Stream uncompressed = Inflate(buf, tag.Size);
+						ReadData(uncompressed);
+						uncompressed.Close();
+					}
+					break;
                 case MatDataTypes.miMATRIX:
                     // read in the matrix
                     int pos = (int)buf.Position;

@@ -52,7 +52,7 @@ namespace csmatio.types
 		/// <param name="vals">Two-dimensional array of values</param>
         public MLUInt64(string Name, ulong[][] vals)
             :
-			this( Name, Long2DToLong( vals ), vals.Length ) {}
+			this(Name, Helpers.Array2DTo1D<ulong>(vals), vals.Length) { }
 
         /// <summary>
         /// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -76,7 +76,7 @@ namespace csmatio.types
         /// <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
         public MLUInt64(string Name, ulong[][] Real, ulong[][] Imag)
             :
-            this(Name, Long2DToLong(Real), Long2DToLong(Imag), Real.Length) { }
+			this(Name, Helpers.Array2DTo1D<ulong>(Real), Helpers.Array2DTo1D<ulong>(Imag), Real.Length) { }
 
 		/// <summary>
 		/// Creates a generic byte array.
@@ -107,24 +107,6 @@ namespace csmatio.types
 				}
 			}
 			return result;
-		}
-
-		/// <summary>
-		/// Converts long[][] to long[]
-		/// </summary>
-		/// <param name="dd"></param>
-		/// <returns></returns>
-        private static ulong[] Long2DToLong(ulong[][] dd)
-		{
-            ulong[] d = new ulong[dd.Length * dd[0].Length];
-			for( int n = 0; n < dd[0].Length; n++ )
-			{
-				for( int m = 0; m < dd.Length; m++ )
-				{
-					d[m+n*dd.Length] = dd[m][n];
-				}
-			}
-			return d;
 		}
 
         /// <summary>

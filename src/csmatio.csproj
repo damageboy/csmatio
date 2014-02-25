@@ -92,6 +92,7 @@
     <Compile Include="common\ByteBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="common\Helpers.cs" />
     <Compile Include="common\MatDataTypes.cs">
       <SubType>Code</SubType>
     </Compile>

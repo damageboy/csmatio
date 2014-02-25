@@ -45,7 +45,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="vals">Two-dimensional array of values</param>
 		public MLDouble( string Name, double[][] vals ) :
-			this( Name, Double2DToDouble( vals ), vals.Length ) {}
+			this( Name, Helpers.Array2DTo1D<double> ( vals ), vals.Length ) {}
 
         /// <summary>
         /// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -69,7 +69,7 @@ namespace csmatio.types
         /// <param name="Imag">One-dimensional array of double for <i>imaginary</i> values, packed by columns</param>
         public MLDouble(string Name, double[][] Real, double[][] Imag)
             :
-            this(Name, Double2DToDouble(Real), Double2DToDouble(Imag), Real.Length) { }
+			this(Name, Helpers.Array2DTo1D<double>(Real), Helpers.Array2DTo1D<double>(Imag), Real.Length) { }
 
 		/// <summary>
 		/// Creates a generic byte array.
@@ -100,24 +100,6 @@ namespace csmatio.types
 				}
 			}
 			return result;
-		}
-
-		/// <summary>
-		/// Converts double[][] to double[]
-		/// </summary>
-		/// <param name="dd"></param>
-		/// <returns></returns>
-		private static double[] Double2DToDouble( double[][] dd )
-		{
-			double[] d = new double[ dd.Length*dd[0].Length ];
-			for( int n = 0; n < dd[0].Length; n++ )
-			{
-				for( int m = 0; m < dd.Length; m++ )
-				{
-					d[m+n*dd.Length] = dd[m][n];
-				}
-			}
-			return d;
 		}
 
 		/// <summary>

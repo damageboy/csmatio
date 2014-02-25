@@ -49,7 +49,7 @@ namespace csmatio.types
         /// <param name="vals">Two-dimensional array of values</param>
         public MLUInt32(string Name, uint[][] vals)
             :
-            this(Name, Int2DToInt(vals), vals.Length) { }
+			this(Name, Helpers.Array2DTo1D<uint>(vals), vals.Length) { }
 
         /// <summary>
         /// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -73,7 +73,7 @@ namespace csmatio.types
         /// <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
         public MLUInt32(string Name, uint[][] Real, uint[][] Imag)
             :
-            this(Name, Int2DToInt(Real), Int2DToInt(Imag), Real.Length) { }
+			this(Name, Helpers.Array2DTo1D<uint>(Real), Helpers.Array2DTo1D<uint>(Imag), Real.Length) { }
 
         /// <summary>
         /// Creates a generic byte array.
@@ -104,24 +104,6 @@ namespace csmatio.types
                 }
             }
             return result;
-        }
-
-        /// <summary>
-        /// Converts int[][] to int[]
-        /// </summary>
-        /// <param name="dd"></param>
-        /// <returns></returns>
-        private static uint[] Int2DToInt(uint[][] dd)
-        {
-            uint[] d = new uint[dd.Length * dd[0].Length];
-            for (int n = 0; n < dd[0].Length; n++)
-            {
-                for (int m = 0; m < dd.Length; m++)
-                {
-                    d[m + n * dd.Length] = dd[m][n];
-                }
-            }
-            return d;
         }
 
         /// <summary>
