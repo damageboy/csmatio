@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using csmatio.types;
 using csmatio.common;
+using System.Runtime.InteropServices;
 
 namespace csmatio.types
 {
@@ -9,11 +10,13 @@ namespace csmatio.types
 	/// Abstract class for numeric arrays.
 	/// </summary>
 	/// <author>David Zier (david.zier@gmail.com)</author>
-	public abstract class MLNumericArray<T>: MLArray, GenericArrayCreator<T>, ByteStorageSupport
+	public abstract class MLNumericArray<T> : MLArray, IGenericArrayCreator<T>, IByteStorageSupport
 	{
 		private ByteBuffer _real;
 		private ByteBuffer _imaginary;
 		private byte[] _bytes;
+
+		#region Contructors
 
 		/// <summary>
 		/// Constructs an abstract MLNumericArray class object
@@ -22,67 +25,68 @@ namespace csmatio.types
 		/// <param name="Dims">The dimensions of the numeric array.</param>
 		/// <param name="Type">The Matlab Array Class type for this array.</param>
 		/// <param name="Attributes">Any attributes associated with this array.</param>
-		public MLNumericArray(string Name, int[] Dims, int Type, int Attributes) :
-			base( Name, Dims, Type, Attributes )
+		protected MLNumericArray(string Name, int[] Dims, int Type, int Attributes)
+			: base(Name, Dims, Type, Attributes)
 		{
-			_real = new ByteBuffer( Size * GetBytesAllocated );
-			if( IsComplex )
-				_imaginary = new ByteBuffer( Size * GetBytesAllocated );
-			_bytes = new byte[ GetBytesAllocated ];
+			_real = new ByteBuffer(Size * GetBytesAllocated);
+			if (IsComplex)
+				_imaginary = new ByteBuffer(Size * GetBytesAllocated);
+			_bytes = new byte[GetBytesAllocated];
 		}
 
 		/// <summary>
-        /// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-        /// construct a 2D real matrix from a one-dimensional packed array.
+		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+		/// construct a 2D real matrix from a one-dimensional packed array.
 		/// </summary>
 		/// <param name="Name">The name of the numeric array.</param>
 		/// <param name="Type">The Matlab Array Class type for this array.</param>
 		/// <param name="Vals">One-dimensional array of doubles, packed by columns.</param>
 		/// <param name="M">The number of rows.</param>
-		public MLNumericArray( string Name, int Type, T[] Vals, int M ) :
-			this( Name, new int[] { M, Vals.Length/M }, Type, 0 )
+		protected MLNumericArray(string Name, int Type, T[] Vals, int M)
+			: this(Name, new int[] { M, Vals.Length / M }, Type, 0)
 		{
 			// Fill in the array
-            for( int i = 0; i < Vals.Length; i++ )
-                Set( Vals[i], i );
+			for (int i = 0; i < Vals.Length; i++)
+				Set(Vals[i], i);
 		}
 
-        /// <summary>
-        /// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-        /// construct a 2D imaginary matrix from a one-dimensional packed array.
-        /// </summary>
-        /// <param name="Name">The name of the numeric array.</param>
-        /// <param name="Type">The Matlab Array Class type for this array.</param>
-        /// <param name="RealVals">One-dimensional array of doubles for the <i>real</i> part, 
-        /// packed by columns</param>
-        /// <param name="ImagVals">One-dimensional array of doubles for the <i>imaginary</i> part, 
-        /// packed by columns</param>
-        /// <param name="M">The number of columns</param>
-        public MLNumericArray(string Name, int Type, T[] RealVals, T[] ImagVals, int M)
-            :
-            this(Name, new int[] { M, RealVals.Length / M }, Type, MLArray.mtFLAG_COMPLEX )
-        {
-            if (ImagVals.Length != RealVals.Length)
-                throw new ArgumentException("Attempting to create an imaginary numeric array where the " +
-                    "imaginary array is _not_ the same size as the real array.");
+		/// <summary>
+		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+		/// construct a 2D imaginary matrix from a one-dimensional packed array.
+		/// </summary>
+		/// <param name="Name">The name of the numeric array.</param>
+		/// <param name="Type">The Matlab Array Class type for this array.</param>
+		/// <param name="RealVals">One-dimensional array of doubles for the <i>real</i> part, 
+		/// packed by columns</param>
+		/// <param name="ImagVals">One-dimensional array of doubles for the <i>imaginary</i> part, 
+		/// packed by columns</param>
+		/// <param name="M">The number of columns</param>
+		protected MLNumericArray(string Name, int Type, T[] RealVals, T[] ImagVals, int M)
+			: this(Name, new int[] { M, RealVals.Length / M }, Type, MLArray.mtFLAG_COMPLEX)
+		{
+			if (ImagVals.Length != RealVals.Length)
+				throw new ArgumentException("Attempting to create an imaginary numeric array where the " +
+					"imaginary array is _not_ the same size as the real array.");
 
-            // Fill in the imaginary array
-            for (int i = 0; i < ImagVals.Length; i++)
-            {
-                SetReal(RealVals[i], i);
-                SetImaginary(ImagVals[i], i);
-            }
-        }
+			// Fill in the imaginary array
+			for (int i = 0; i < ImagVals.Length; i++)
+			{
+				SetReal(RealVals[i], i);
+				SetImaginary(ImagVals[i], i);
+			}
+		}
 
-        /// <summary>Gets the flags for this array.</summary>
-        public override int Flags
-        {
-            get 
-            { 
-                return (int)((uint)(base._type & MLArray.mtFLAG_TYPE) 
-                    | (uint)(base._attributes & 0xFFFFFF00)); 
-            }
-        }
+		#endregion
+
+		/// <summary>Gets the flags for this array.</summary>
+		public override int Flags
+		{
+			get
+			{
+				return (int)((uint)(base._type & MLArray.mtFLAG_TYPE)
+					| (uint)(base._attributes & 0xFFFFFF00));
+			}
+		}
 
 		/// <summary>
 		/// Gets a single real array element of A(m,n).
@@ -90,9 +94,9 @@ namespace csmatio.types
 		/// <param name="M">Row index</param>
 		/// <param name="N">Column index</param>
 		/// <returns>Array Element</returns>
-		public virtual T GetReal( int M, int N )
-		{ 
-			return GetReal( GetIndex( M, N ) ); 
+		public virtual T GetReal(int M, int N)
+		{
+			return GetReal(GetIndex(M, N));
 		}
 
 		/// <summary>
@@ -109,9 +113,9 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="Index">Column-packed vector index.</param>
 		/// <returns>Array Element.</returns>
-		public virtual T GetReal( int Index )
-		{ 
-			return _Get( _real, Index ); 
+		public virtual T GetReal(int Index)
+		{
+			return _Get(_real, Index);
 		}
 
 		/// <summary>
@@ -120,9 +124,9 @@ namespace csmatio.types
 		/// <param name="Val">The element value.</param>
 		/// <param name="M">The row index.</param>
 		/// <param name="N">The column index.</param>
-		public virtual void SetReal( T Val, int M, int N )
+		public virtual void SetReal(T Val, int M, int N)
 		{
-			SetReal( Val, GetIndex( M, N ) );
+			SetReal(Val, GetIndex(M, N));
 		}
 
 		/// <summary>
@@ -130,24 +134,24 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="Val">The element value.</param>
 		/// <param name="Index">Column-packed vector index.</param>
-		public virtual void SetReal( T Val, int Index )
+		public virtual void SetReal(T Val, int Index)
 		{
-			_Set( _real, Val, Index );
+			_Set(_real, Val, Index);
 		}
 
-        ///// <summary>
-        ///// Sets real part of the matrix.
-        ///// </summary>
-        ///// <exception cref="ArgumentException">When the <c>Vector</c> is not the
-        ///// same length as the Numeric Array.</exception>
-        ///// <param name="Vector">A column-packed vector of elements.</param>
-        //public void SetReal( T[] Vector )
-        //{
-        //    if( Vector.Length != Size )
-        //        throw new ArgumentException("Matrix dimensions do not match. " + Size + " not " + Vector.Length );
-        //    //Array.Copy( Vector, 0, _real, 0, Vector.Length );
-        //    _real.CopyFrom(Vector);
-        //}
+		///// <summary>
+		///// Sets real part of the matrix.
+		///// </summary>
+		///// <exception cref="ArgumentException">When the <c>Vector</c> is not the
+		///// same length as the Numeric Array.</exception>
+		///// <param name="Vector">A column-packed vector of elements.</param>
+		//public void SetReal( T[] Vector )
+		//{
+		//    if( Vector.Length != Size )
+		//        throw new ArgumentException("Matrix dimensions do not match. " + Size + " not " + Vector.Length );
+		//    //Array.Copy( Vector, 0, _real, 0, Vector.Length );
+		//    _real.CopyFrom(Vector);
+		//}
 
 		/// <summary>
 		/// Sets a single imaginary array element.
@@ -155,10 +159,10 @@ namespace csmatio.types
 		/// <param name="Val">Element value.</param>
 		/// <param name="M">Row Index.</param>
 		/// <param name="N">Column Index.</param>
-		public virtual void SetImaginary( T Val, int M, int N )
+		public virtual void SetImaginary(T Val, int M, int N)
 		{
-			if( IsComplex )
-				SetImaginary( Val, GetIndex( M, N ) );
+			if (IsComplex)
+				SetImaginary(Val, GetIndex(M, N));
 		}
 
 		/// <summary>
@@ -166,10 +170,10 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="Val">Element Value</param>
 		/// <param name="Index">Column-packed vector index.</param>
-		public virtual void SetImaginary( T Val, int Index )
+		public virtual void SetImaginary(T Val, int Index)
 		{
-			if( IsComplex )
-				_Set( _imaginary, Val, Index );
+			if (IsComplex)
+				_Set(_imaginary, Val, Index);
 		}
 
 		/// <summary>
@@ -178,9 +182,9 @@ namespace csmatio.types
 		/// <param name="M">Row index</param>
 		/// <param name="N">Column index</param>
 		/// <returns>Array element</returns>
-		public virtual T GetImaginary( int M, int N )
+		public virtual T GetImaginary(int M, int N)
 		{
-			return GetImaginary( GetIndex( M, N ) );
+			return GetImaginary(GetIndex(M, N));
 		}
 
 		/// <summary>
@@ -188,9 +192,9 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="Index">Column-packed vector index</param>
 		/// <returns>Array Element</returns>
-		public virtual T GetImaginary( int Index )
+		public virtual T GetImaginary(int Index)
 		{
-			return _Get( _imaginary, Index );
+			return _Get(_imaginary, Index);
 		}
 
 		/// <summary>
@@ -199,7 +203,7 @@ namespace csmatio.types
 		/// <returns>The real buffer</returns>
 		public ByteBuffer GetImaginary()
 		{
-			if( IsComplex )
+			if (IsComplex)
 				return _imaginary;
 			else
 				return null;
@@ -211,11 +215,11 @@ namespace csmatio.types
 		/// <param name="Val">Element Value</param>
 		/// <param name="M">Row index</param>
 		/// <param name="N">Column index</param>
-		public void Set( T Val, int M, int N )
+		public void Set(T Val, int M, int N)
 		{
-			if( IsComplex )
+			if (IsComplex)
 				throw new MethodAccessException("Cannot use this method for Complex matrices");
-			SetReal( Val, M, N );
+			SetReal(Val, M, N);
 		}
 
 		/// <summary>
@@ -223,11 +227,11 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="Val">Element Value</param>
 		/// <param name="Index">Column-packed vector index</param>
-		public void Set( T Val, int Index )
+		public void Set(T Val, int Index)
 		{
-			if( IsComplex )
+			if (IsComplex)
 				throw new MethodAccessException("Cannot use this method for Complex matrices");
-			SetReal( Val, Index );
+			SetReal(Val, Index);
 		}
 		/// <summary>
 		/// Does the same as <c>GetReal</c>.
@@ -235,11 +239,11 @@ namespace csmatio.types
 		/// <param name="M">Row index</param>
 		/// <param name="N">Column index</param>
 		/// <returns>An array element value.</returns>
-		public T Get( int M, int N )
+		public T Get(int M, int N)
 		{
-			if( IsComplex )
+			if (IsComplex)
 				throw new MethodAccessException("Cannot use this method for Complex matrices");
-			return GetReal( M, N );
+			return GetReal(M, N);
 		}
 
 		/// <summary>
@@ -247,27 +251,27 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="Index">Column-packed vector index</param>
 		/// <returns>An array element value.</returns>
-		public T Get( int Index )
+		public T Get(int Index)
 		{
-			if( IsComplex )
+			if (IsComplex)
 				throw new MethodAccessException("Cannot use this method for Complex matrices");
-			return GetReal( Index );
+			return GetReal(Index);
 		}
 
-        ///// <summary>
-        ///// Does the same as <c>SetReal</c>
-        ///// </summary>
-        ///// <param name="Vector">A column-packed vector of elements.</param>
-        //public void Set( T[] Vector )
-        //{
-        //    if( IsComplex )
-        //        throw new MethodAccessException("Cannot use this method for Complex matrices");
-        //    SetReal( Vector );
-        //}
+		///// <summary>
+		///// Does the same as <c>SetReal</c>
+		///// </summary>
+		///// <param name="Vector">A column-packed vector of elements.</param>
+		//public void Set( T[] Vector )
+		//{
+		//    if( IsComplex )
+		//        throw new MethodAccessException("Cannot use this method for Complex matrices");
+		//    SetReal( Vector );
+		//}
 
-		private int _GetByteOffset( int Index )
+		private int _GetByteOffset(int Index)
 		{
-			return Index*GetBytesAllocated;
+			return Index * GetBytesAllocated;
 		}
 
 		/// <summary>
@@ -276,11 +280,11 @@ namespace csmatio.types
 		/// <param name="Buffer">The <c>ByteBuffer</c> object.</param>
 		/// <param name="Index">A column-packed index.</param>
 		/// <returns>The object data.</returns>
-		protected virtual T _Get( ByteBuffer Buffer, int Index )
+		protected virtual T _Get(ByteBuffer Buffer, int Index)
 		{
-			Buffer.Position( _GetByteOffset( Index ) );
-			Buffer.Get( ref _bytes, 0, _bytes.Length );
-			return (T)BuildFromBytes( _bytes );
+			Buffer.Position(_GetByteOffset(Index));
+			Buffer.Get(ref _bytes, 0, _bytes.Length);
+			return (T)BuildFromBytes(_bytes);
 		}
 
 		/// <summary>
@@ -289,10 +293,29 @@ namespace csmatio.types
 		/// <param name="Buffer">The <c>ByteBuffer</c> to where the object data will be stored.</param>
 		/// <param name="Val">The object data.</param>
 		/// <param name="Index">A column-packed index</param>
-		protected void _Set( ByteBuffer Buffer, T Val, int Index )
+		protected void _Set(ByteBuffer Buffer, T Val, int Index)
 		{
-			Buffer.Position( _GetByteOffset( Index ) );
-			Buffer.Put( GetByteArray( Val ) );
+			Buffer.Position(_GetByteOffset(Index));
+			Buffer.Put(GetByteArray(Val));
+		}
+
+		/// <summary>
+		/// Gets a two-dimensional array.
+		/// </summary>
+		/// <returns>2D array.</returns>
+		public T[][] GetArray()
+		{
+			T[][] result = new T[M][];
+			for (int m = 0; m < M; m++)
+			{
+				result[m] = new T[N];
+				for (int n = 0; n < N; n++)
+				{
+					result[m][n] = GetReal(m, n);
+				}
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -300,14 +323,14 @@ namespace csmatio.types
 		/// </summary>
 		public ByteBuffer ImaginaryByteBuffer
 		{
-            get { return _imaginary; }
-            set
-            {
-                if (!IsComplex)
-                    throw new MethodAccessException("Array is not complex");
-                _imaginary.Rewind();
-                _imaginary.Put(value);
-            }
+			get { return _imaginary; }
+			set
+			{
+				if (!IsComplex)
+					throw new MethodAccessException("Array is not complex");
+				_imaginary.Rewind();
+				_imaginary.Put(value);
+			}
 		}
 
 		/// <summary>
@@ -316,12 +339,12 @@ namespace csmatio.types
 		/// </summary>
 		public ByteBuffer RealByteBuffer
 		{
-            get { return _real; }
-            set
-            {
-                _real.Rewind();
-                _real.Put(value);
-            }
+			get { return _real; }
+			set
+			{
+				_real.Rewind();
+				_real.Put(value);
+			}
 		}
 
 		/// <summary>
@@ -332,22 +355,22 @@ namespace csmatio.types
 		public override string ContentToString()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			sb.Append( Name + " = \n");
+			sb.Append(Name + " = \n");
 
-			if( Size > 1000 )
+			if (Size > 1000)
 			{
 				// sb.Append("Cannot display variables with more than 1000 elements.");
-                sb.Append(this.ToString());
+				sb.Append(this.ToString());
 				return sb.ToString();
 			}
-			for( int m = 0; m < M; m++ )
+			for (int m = 0; m < M; m++)
 			{
 				sb.Append("\t");
-				for( int n = 0; n < N; n++ )
+				for (int n = 0; n < N; n++)
 				{
-					sb.Append( GetReal(m,n) );
-					if( IsComplex )
-						sb.Append("+" + GetImaginary(m,n) );
+					sb.Append(GetReal(m, n));
+					if (IsComplex)
+						sb.Append("+" + GetImaginary(m, n));
 					sb.Append("\t");
 				}
 				sb.Append("\n");
@@ -360,18 +383,18 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="o">A <c>System.Object</c> to be compared with.</param>
 		/// <returns>True if the object match.</returns>
-		public override bool Equals( object o )
+		public override bool Equals(object o)
 		{
-			if( o.GetType() == typeof( MLNumericArray<T> ) )
+			if (o.GetType() == typeof(MLNumericArray<T>))
 			{
-				bool result = DirectByteBufferEquals( _real, ((MLNumericArray<T>)o).GetReal() ) && 
-					Array.Equals( Dimensions, ((MLNumericArray<T>)o).Dimensions );
-				
-				if( IsComplex && result )
-					result &= DirectByteBufferEquals( _imaginary, ((MLNumericArray<T>)o).GetImaginary() );
+				bool result = DirectByteBufferEquals(_real, ((MLNumericArray<T>)o).GetReal()) &&
+					Array.Equals(Dimensions, ((MLNumericArray<T>)o).Dimensions);
+
+				if (IsComplex && result)
+					result &= DirectByteBufferEquals(_imaginary, ((MLNumericArray<T>)o).GetImaginary());
 				return result;
 			}
-			return base.Equals( o );
+			return base.Equals(o);
 		}
 
 		/// <summary>
@@ -380,7 +403,7 @@ namespace csmatio.types
 		/// <returns>A hashcode for this object</returns>
 		public override int GetHashCode()
 		{
-			return base.GetHashCode ();
+			return base.GetHashCode();
 		}
 
 
@@ -390,26 +413,26 @@ namespace csmatio.types
 		/// <param name="buffa">The source buffer to be compared.</param>
 		/// <param name="buffb">The destination buffer to be compared.</param>
 		/// <returns><c>true</c> if buffers are equal in terms of content.</returns>
-		private static bool DirectByteBufferEquals( ByteBuffer buffa, ByteBuffer buffb )
+		private static bool DirectByteBufferEquals(ByteBuffer buffa, ByteBuffer buffb)
 		{
-			if( buffa == buffb )
+			if (buffa == buffb)
 				return true;
 
-			if( buffa == null || buffb == null )
+			if (buffa == null || buffb == null)
 				return false;
 
 			buffa.Rewind();
 			buffb.Rewind();
 
-			int length = buffa.Remaining();
+			int length = buffa.Remaining;
 
-			if( buffb.Remaining() != length )
+			if (buffb.Remaining != length)
 				return false;
 
-			for( int i = 0; i < length; i++ )
-				if( buffa.Get() != buffb.Get() )
+			for (int i = 0; i < length; i++)
+				if (buffa.Get() != buffb.Get())
 					return false;
-			
+
 			return true;
 		}
 
@@ -424,7 +447,7 @@ namespace csmatio.types
 		/// <returns>A generic array.</returns>
 		public virtual T[] CreateArray(int m, int n)
 		{
-			return null;
+			return new T[m * n];
 		}
 
 		#endregion
@@ -435,10 +458,24 @@ namespace csmatio.types
 		/// Gets the number of bytes allocated for a type
 		/// </summary>
 		public virtual int GetBytesAllocated
-		{ 
+		{
 			get
 			{
-				return 0; 
+				int retval;
+				Type tt = typeof(T);
+				if (tt.IsValueType)
+				{
+					retval = Marshal.SizeOf(tt);
+				}
+				else
+				{
+					// tt is a reference type, so the size in memory is the pointer size.
+					// We could return "retval = IntPtr.Size", but probably thats not what the user wants?
+					// So tell him something went wrong.
+					retval = -1;
+				}
+
+				return retval;
 			}
 		}
 
@@ -447,30 +484,37 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="bytes">A byte array containing the data.</param>
 		/// <returns>A numeric object</returns>
-		public virtual object BuildFromBytes( byte[] bytes )
+		public virtual object BuildFromBytes(byte[] bytes)
 		{
-			return null;
+			if (bytes.Length != GetBytesAllocated)
+			{
+				throw new ArgumentException(
+					"To build from a byte array, I need an array of size: " + GetBytesAllocated);
+			}
+
+			return BuildFromBytes2(bytes);
 		}
 
 		/// <summary>
 		/// Gets a byte array from a numeric object.
 		/// </summary>
 		/// <param name="val">The numeric object to convert into a byte array.</param>
-		public virtual byte[] GetByteArray( object val )
-		{
-			return null;
-		}
+		public abstract byte[] GetByteArray(object val);
 
 		/// <summary>
 		/// Gets the type of numeric object that this byte storage represents
 		/// </summary>
 		public virtual Type GetStorageType
-		{ 
-			get
-			{
-				return null;
-			}
-		} 
+		{
+			get { return typeof(T); }
+		}
+
+		/// <summary>
+		/// Builds a numeric object from a byte array.
+		/// </summary>
+		/// <param name="bytes">A byte array containing the data.</param>
+		/// <returns>A numeric object</returns>
+		protected abstract object BuildFromBytes2(byte[] bytes);
 
 		#endregion
 	}

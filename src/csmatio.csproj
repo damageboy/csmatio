@@ -118,10 +118,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="types\MLInt16.cs" />
-    <Compile Include="types\ByteStorageSupport.cs">
+    <Compile Include="types\IByteStorageSupport.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="types\GenericArrayCreator.cs">
+    <Compile Include="types\IGenericArrayCreator.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="types\MLArray.cs">

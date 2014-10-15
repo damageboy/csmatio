@@ -191,7 +191,8 @@ namespace csmatio.io
 
 					break;
 				case MLArray.mxDOUBLE_CLASS:
-					// TODO: Exception occurs here when trying to write a MLEmptyArray
+					// TODO: Exception occurs here when trying to write a MLEmptyArray.
+					// See https://sourceforge.net/p/csmatio/tickets/5/
 					tag = new OSArrayTag( MatDataTypes.miDOUBLE, 
 						((MLNumericArray<double>)array).RealByteBuffer );
 					tag.WriteTo( bw );
@@ -225,16 +226,13 @@ namespace csmatio.io
 					}
 					break;
 				case MLArray.mxINT8_CLASS:
-					// TODO: check: 
-					// - Why ist it MLNumericArray<short> and not MLNumericArray<sbyte> ?
-					// - MatFileReader.ReadMatrix() uses MLNumericArray<byte> !
-					tag = new OSArrayTag(MatDataTypes.miINT16, 
-						((MLNumericArray<short>)array).RealByteBuffer );
+					tag = new OSArrayTag(MatDataTypes.miINT8, 
+						((MLNumericArray<sbyte>)array).RealByteBuffer );
 					tag.WriteTo( bw );
 					if( array.IsComplex )
 					{
-                        tag = new OSArrayTag(MatDataTypes.miINT16,
-                            ((MLNumericArray<short>)array).ImaginaryByteBuffer);
+                        tag = new OSArrayTag(MatDataTypes.miINT8,
+                            ((MLNumericArray<sbyte>)array).ImaginaryByteBuffer);
 						tag.WriteTo( bw );
 					}
 					break;
@@ -500,11 +498,11 @@ namespace csmatio.io
                     os.Write(_size);
 
                     int maxBuffSize = 1024;
-                    int writeBuffSize = _data.Remaining() < maxBuffSize ? _data.Remaining() : maxBuffSize;
+                    int writeBuffSize = _data.Remaining < maxBuffSize ? _data.Remaining : maxBuffSize;
                     byte[] tmp = new byte[writeBuffSize];
-                    while (_data.Remaining() > 0)
+                    while (_data.Remaining > 0)
                     {
-                        int length = _data.Remaining() > tmp.Length ? tmp.Length : _data.Remaining();
+                        int length = _data.Remaining > tmp.Length ? tmp.Length : _data.Remaining;
                         _data.Get(ref tmp, 0, length);
                         os.Write(tmp, 0, length);
                     }

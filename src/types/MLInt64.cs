@@ -6,14 +6,22 @@ namespace csmatio.types
 	/// <summary>
 	/// This class represents an Int64 (long) array (matrix)
 	/// </summary>
-    /// <remarks>
-    /// For some reason, Matlab sees the <c>mxINT64</c> class as an array of
-    /// doubles, so in order to get this to work, <c>MLInt64</c> actually converts
-    /// all of the long data to doubles.
-    /// </remarks>
+	/// <remarks>
+	/// <para>
+	/// Davids original comment: 
+	/// For some reason, Matlab sees the <c>mxINT64</c> class as an array of
+	/// doubles, so in order to get this to work, <c>MLInt64</c> actually converts
+	/// all of the long data to doubles.
+	/// </para>
+	/// <para>
+	/// Tobias: I changed this behaviour into a more "standard" behaviour because I couldn't reproduce Davids findings.
+	/// </para>
+	/// </remarks>
 	/// <author>David Zier (david.zier@gmail.com)</author>
-	public class MLInt64 : MLNumericArray<double>
+	public class MLInt64 : MLNumericArray<long>
 	{
+		#region Constructors
+
 		/// <summary>
 		/// Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
 		/// </summary>
@@ -21,16 +29,16 @@ namespace csmatio.types
 		/// <param name="Dims">Array dimensions</param>
 		/// <param name="Type">Array type: here <c>mxINT64_CLASS</c></param>
 		/// <param name="Attributes">Array flags</param>
-		public MLInt64( string Name, int[] Dims, int Type, int Attributes ) :
-			base( Name, Dims, Type, Attributes ) {}
+		public MLInt64(string Name, int[] Dims, int Type, int Attributes)
+			: base(Name, Dims, Type, Attributes) { }
 
 		/// <summary>
 		/// Create a <c>MLInt64</c> array with given name and dimensions.
 		/// </summary>
 		/// <param name="Name">Array name</param>
 		/// <param name="Dims">Array dimensions</param>
-		public MLInt64( string Name, int[] Dims ) :
-			base( Name, Dims, MLArray.mxINT64_CLASS, 0 ) {}
+		public MLInt64(string Name, int[] Dims)
+			: base(Name, Dims, MLArray.mxINT64_CLASS, 0) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -39,8 +47,8 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="vals">One-dimensional array of <c>long</c>, packed by columns</param>
 		/// <param name="m">Number of rows</param>
-		public MLInt64( string Name, long[] vals, int m ) :
-			base( Name, MLArray.mxDOUBLE_CLASS, LongToDouble(vals), m ) {}
+		public MLInt64(string Name, long[] vals, int m)
+			: base(Name, MLArray.mxINT64_CLASS, vals, m) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -49,121 +57,50 @@ namespace csmatio.types
 		/// <remarks>Note: Array is converted to <c>long[]</c></remarks>
 		/// <param name="Name">Array name</param>
 		/// <param name="vals">Two-dimensional array of values</param>
-		public MLInt64( string Name, long[][] vals ) :
-			this(Name, Helpers.Array2DTo1D<long>(vals), vals.Length) { }
-
-        /// <summary>
-        /// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-        /// construct a 2D imaginary matrix from a one-dimensional packed array.
-        /// </summary>
-        /// <param name="Name">Array name</param>
-        /// <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
-        /// <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
-        /// <param name="M">Number of rows</param>
-        public MLInt64(string Name, long[] Real, long[] Imag, int M)
-            :
-            base(Name, MLArray.mxDOUBLE_CLASS, LongToDouble(Real), LongToDouble(Imag), M) { }
-
-
-        /// <summary>
-        /// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-        /// construct a 2D imaginary matrix from a one-dimensional packed array.
-        /// </summary>
-        /// <param name="Name">Array name</param>
-        /// <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
-        /// <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
-        public MLInt64(string Name, long[][] Real, long[][] Imag)
-            :
-			this(Name, Helpers.Array2DTo1D<long>(Real), Helpers.Array2DTo1D<long>(Imag), Real.Length) { }
+		public MLInt64(string Name, long[][] vals)
+			: this(Name, Helpers.Array2DTo1D<long>(vals), vals.Length) { }
 
 		/// <summary>
-		/// Creates a generic byte array.
+		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+		/// construct a 2D imaginary matrix from a one-dimensional packed array.
 		/// </summary>
-		/// <param name="m">The number of columns in the array</param>
-		/// <param name="n">The number of rows in the array</param>
-		/// <returns>A generic array.</returns>
-		public override double[] CreateArray( int m, int n )
+		/// <param name="Name">Array name</param>
+		/// <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
+		/// <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
+		/// <param name="M">Number of rows</param>
+		public MLInt64(string Name, long[] Real, long[] Imag, int M)
+			: base(Name, MLArray.mxINT64_CLASS, Real, Imag, M) { }
+
+
+		/// <summary>
+		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+		/// construct a 2D imaginary matrix from a one-dimensional packed array.
+		/// </summary>
+		/// <param name="Name">Array name</param>
+		/// <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
+		/// <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
+		public MLInt64(string Name, long[][] Real, long[][] Imag)
+			: this(Name, Helpers.Array2DTo1D<long>(Real), Helpers.Array2DTo1D<long>(Imag), Real.Length) { }
+
+		#endregion
+
+		/// <summary>
+		/// Builds a numeric object from a byte array.
+		/// </summary>
+		/// <param name="bytes">A byte array containing the data.</param>
+		/// <returns>A numeric object</returns>
+		protected override object BuildFromBytes2(byte[] bytes)
 		{
-			return new double[ m * n ];
+			return BitConverter.ToInt64(bytes, 0);
 		}
 
 		/// <summary>
-		/// Gets a two-dimensional array.
+		/// Gets a byte array from a numeric object.
 		/// </summary>
-		/// <returns>2D real array.</returns>
-		public long[][] GetArray()
+		/// <param name="val">The numeric object to convert into a byte array.</param>
+		public override byte[] GetByteArray(object val)
 		{
-			long[][] result = new long[M][];
-
-			for( int m = 0; m < M; m++ )
-			{
-				result[m] = new long[ N ];
-
-				for ( int n = 0; n < N; n++ )
-				{
-					result[m][n] = (long)GetReal(m,n);
-				}
-			}
-			return result;
+			return BitConverter.GetBytes((long)val);
 		}
-
-        /// <summary>
-        /// Converts a <c>long[]</c> into a <c>double[]</c>
-        /// </summary>
-        /// <param name="dd"><c>long[]</c></param>
-        /// <returns><c>double[]</c></returns>
-        private static double[] LongToDouble(long[] dd)
-        {
-            double[] d = new double[dd.Length];
-            for (int i = 0; i < dd.Length; i++)
-            {
-                d[i] = (double)dd[i]; // Convert a long to a double
-            }
-            return d;
-        }
-
-        /// <summary>
-        /// Gets the number of bytes allocated for a type
-        /// </summary>
-        unsafe public override int GetBytesAllocated
-        {
-            get
-            {
-                return sizeof(double);
-            }
-        }
-        /// <summary>
-        /// Builds a numeric object from a byte array.
-        /// </summary>
-        /// <param name="bytes">A byte array containing the data.</param>
-        /// <returns>A numeric object</returns>
-        public override object BuildFromBytes(byte[] bytes)
-        {
-            if (bytes.Length != GetBytesAllocated)
-                throw new ArgumentException(
-                    "To build from a byte array, I need an array of size: " + GetBytesAllocated);
-            return BitConverter.ToDouble(bytes, 0);
-        }
-
-        /// <summary>
-        /// Gets the type of numeric object that this byte storage represents
-        /// </summary>
-        public override Type GetStorageType
-        {
-            get
-            {
-                return typeof(double);
-            }
-        }
-
-        /// <summary>
-        /// Gets a <c>byte[]</c> for a particular long value.
-        /// </summary>
-        /// <param name="val">The long value</param>
-        /// <returns>A byte array</returns>
-        public override byte[] GetByteArray(object val)
-        {
-            return BitConverter.GetBytes((double)val);
-        }
-    }
+	}
 }

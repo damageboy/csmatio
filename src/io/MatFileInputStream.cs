@@ -202,7 +202,7 @@ namespace csmatio.io
 		/// <exception cref="NotSupportedException">When attempting to read an unsupported
 		/// class type from the buffer</exception>
 		public ByteBuffer ReadToByteBuffer(ByteBuffer dest, int elements,
-			ByteStorageSupport storage)
+			IByteStorageSupport storage)
 		{
 			int bytesAllocated = storage.GetBytesAllocated;
 			int size = elements * bytesAllocated;
@@ -216,9 +216,9 @@ namespace csmatio.io
 
 				byte[] tmp = new byte[bufSize];
 
-				while (dest.Remaining() > 0)
+				while (dest.Remaining > 0)
 				{
-					int length = Math.Min(dest.Remaining(), tmp.Length);
+					int length = Math.Min(dest.Remaining, tmp.Length);
 					_buf.Read(tmp, 0, length);
 					dest.Put(tmp, 0, length);
 				}
@@ -229,7 +229,7 @@ namespace csmatio.io
 				// Because Matlab writes data not respectively to the declared
 				// matrix type, the reading is not straight forward (as above)
 				Type clazz = storage.GetStorageType;
-				while (dest.Remaining() > 0)
+				while (dest.Remaining > 0)
 				{
 					if (clazz.Equals(typeof(double)))
 					{

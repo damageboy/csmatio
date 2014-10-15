@@ -24,7 +24,7 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="Name">Array name</param>
 		/// <param name="Dims">Array dimensions</param>
-		/// <param name="Type">Array type: here <c>mxDOUBLE_CLASS</c></param>
+		/// <param name="Type">Array type: here <c>mxCELL_CLASS</c></param>
 		/// <param name="Attributes">Array flags</param>
 		public MLCell( String Name, int[] Dims, int Type, int Attributes ) :
 			base( Name, Dims, Type, Attributes )

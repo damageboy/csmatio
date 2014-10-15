@@ -8,7 +8,7 @@ namespace csmatio.types
 	/// This class represents an Matlab Char array (matrix)
 	/// </summary>
 	/// <author>David Zier (david.zier@gmail.com)</author>
-	public class MLChar : MLArray, GenericArrayCreator<char>
+	public class MLChar : MLArray, IGenericArrayCreator<char>
 	{
 		char[] _chars;
 
@@ -28,7 +28,7 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="Name">Array name</param>
 		/// <param name="Dims">Array dimensions</param>
-		/// <param name="Type">Array type: here <c>mxDOUBLE_CLASS</c></param>
+		/// <param name="Type">Array type: here <c>mxCHAR_CLASS</c></param>
 		/// <param name="Attributes">Array flags</param>
 		public MLChar( string Name, int[] Dims, int Type, int Attributes ) :
 			base( Name, Dims, Type, Attributes )

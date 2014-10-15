@@ -9,6 +9,8 @@ namespace csmatio.types
 	/// <author>David Zier (david.zier@gmail.com)</author>
 	public class MLSingle : MLNumericArray<float>
 	{
+		#region Constructors
+
 		/// <summary>
 		/// Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
 		/// </summary>
@@ -69,76 +71,22 @@ namespace csmatio.types
 		public MLSingle(string Name, float[][] Real, float[][] Imag)
 			: this(Name, Helpers.Array2DTo1D<float>(Real), Helpers.Array2DTo1D<float>(Imag), Real.Length) { }
 
-		/// <summary>
-		/// Creates a generic 1D array.
-		/// </summary>
-		/// <param name="m">The number of columns in the array</param>
-		/// <param name="n">The number of rows in the array</param>
-		/// <returns>A generic array.</returns>
-		public override float[] CreateArray(int m, int n)
-		{
-			return new float[m * n];
-		}
+		#endregion
 
-		/// <summary>
-		/// Gets a two-dimensional array.
-		/// </summary>
-		/// <returns>2D real array.</returns>
-		public float[][] GetArray()
-		{
-			float[][] result = new float[M][];
-
-			for (int m = 0; m < M; m++)
-			{
-				result[m] = new float[N];
-
-				for (int n = 0; n < N; n++)
-				{
-					result[m][n] = GetReal(m, n);
-				}
-			}
-			return result;
-		}
-
-		/// <summary>
-		/// Gets the number of bytes allocated for a type
-		/// </summary>
-		unsafe public override int GetBytesAllocated
-		{
-			get
-			{
-				return sizeof(float);
-			}
-		}
 		/// <summary>
 		/// Builds a numeric object from a byte array.
 		/// </summary>
 		/// <param name="bytes">A byte array containing the data.</param>
 		/// <returns>A numeric object</returns>
-		public override object BuildFromBytes(byte[] bytes)
+		protected override object BuildFromBytes2(byte[] bytes)
 		{
-			if (bytes.Length != GetBytesAllocated)
-				throw new ArgumentException(
-					"To build from a byte array, I need an array of size: " + GetBytesAllocated);
 			return BitConverter.ToSingle(bytes, 0);
 		}
 
 		/// <summary>
-		/// Gets the type of numeric object that this byte storage represents
+		/// Gets a byte array from a numeric object.
 		/// </summary>
-		public override Type GetStorageType
-		{
-			get
-			{
-				return typeof(float);
-			}
-		}
-
-		/// <summary>
-		/// Gets a <c>byte[]</c> for a particular float value.
-		/// </summary>
-		/// <param name="val">The float value</param>
-		/// <returns>A byte array</returns>
+		/// <param name="val">The numeric object to convert into a byte array.</param>
 		public override byte[] GetByteArray(object val)
 		{
 			return BitConverter.GetBytes((float)val);

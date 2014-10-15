@@ -6,7 +6,7 @@ namespace csmatio.types
 	/// Interface used to create a generic array GenericArrayCreator.
 	/// </summary>
     /// <typeparam name="T">Generic Type for the array.</typeparam>
-	public interface GenericArrayCreator<T>
+	public interface IGenericArrayCreator<T>
 	{
 		/// <summary>
 		/// Creates a generic array.

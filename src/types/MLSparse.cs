@@ -11,8 +11,8 @@ namespace csmatio.types
 	{
 		private int _nzMax;
 		private List<IndexMN> _indexSet;
-		private Dictionary<IndexMN,double> _real;
-		private Dictionary<IndexMN,double> _imaginary;
+		private Dictionary<IndexMN, double> _real;
+		private Dictionary<IndexMN, double> _imaginary;
 
 		/// <summary>
 		/// Matrix index (m,n)
@@ -29,7 +29,7 @@ namespace csmatio.types
 			/// </summary>
 			/// <param name="m">The row index</param>
 			/// <param name="n">The column index</param>
-			public IndexMN( int m, int n )
+			public IndexMN(int m, int n)
 			{
 				_m = m;
 				_n = n;
@@ -40,8 +40,8 @@ namespace csmatio.types
 			/// </summary>
 			public int M
 			{
-				get{ return _m; }
-				set{ _m = value; }
+				get { return _m; }
+				set { _m = value; }
 			}
 
 			/// <summary>
@@ -49,8 +49,8 @@ namespace csmatio.types
 			/// </summary>
 			public int N
 			{
-				get{ return _n; }
-				set{ _n = value; }
+				get { return _n; }
+				set { _n = value; }
 			}
 
 			/// <summary>
@@ -60,8 +60,8 @@ namespace csmatio.types
 			public override int GetHashCode()
 			{
 				long l = (long)_m;
-				l ^= (long)_n*31L;
-				return (int) l^(int)(l >> 32 );
+				l ^= (long)_n * 31L;
+				return (int)l ^ (int)(l >> 32);
 			}
 
 			/// <summary>
@@ -71,13 +71,13 @@ namespace csmatio.types
 			/// <returns>True if the object match.</returns>
 			public override bool Equals(object obj)
 			{
-				if( obj.GetType() == typeof(IndexMN) )
+				if (obj.GetType() == typeof(IndexMN))
 				{
 					return _m == ((IndexMN)obj).M && _n == ((IndexMN)obj).N;
 				}
-				return base.Equals( obj );
+				return base.Equals(obj);
 			}
-			
+
 			/// <summary>
 			/// Get a string representation for this <c>IndexMN</c>.
 			/// </summary>
@@ -88,6 +88,8 @@ namespace csmatio.types
 			}
 		}
 
+		#region Constructors
+
 		/// <summary>
 		/// Construct a new <c>MLSparse</c> object
 		/// </summary>
@@ -95,21 +97,23 @@ namespace csmatio.types
 		/// <param name="Dims">Array dimensions</param>
 		/// <param name="Attributes">Array flags</param>
 		/// <param name="nzMax">Maximum number of non-zero numbers</param>
-		public MLSparse( string Name, int[] Dims, int Attributes, int nzMax ) :
-			base( Name, Dims, MLArray.mxSPARSE_CLASS, Attributes )
+		public MLSparse(string Name, int[] Dims, int Attributes, int nzMax)
+			: base(Name, Dims, MLArray.mxSPARSE_CLASS, Attributes)
 		{
 			_nzMax = nzMax;
-			_real = new Dictionary<IndexMN,double>();
-			_imaginary = new Dictionary<IndexMN,double>();
+			_real = new Dictionary<IndexMN, double>();
+			_imaginary = new Dictionary<IndexMN, double>();
 			_indexSet = new List<IndexMN>();
 		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets the maximum number of non-zero values.
 		/// </summary>
 		public int MaxNZ
 		{
-			get{ return _nzMax; }
+			get { return _nzMax; }
 		}
 
 		/// <summary>
@@ -123,7 +127,7 @@ namespace csmatio.types
 			{
 				int[] ir = new int[_nzMax];
 				int i = 0;
-				foreach( IndexMN index in _indexSet )
+				foreach (IndexMN index in _indexSet)
 				{
 					ir[i++] = index.M;
 				}
@@ -146,27 +150,27 @@ namespace csmatio.types
 		{
 			get
 			{
-				int[] jc = new int[N+1];
+				int[] jc = new int[N + 1];
 
 				// Create tmp array of nnz column indices
 				int[] tmp = new int[_nzMax];
 				int i = 0;
-				foreach( IndexMN index in _indexSet )
+				foreach (IndexMN index in _indexSet)
 				{
 					tmp[i++] = index.N;
 				}
 
 				// Create JC
 				int c = 0;
-				for( int k = 0; k < jc.Length - 1; k++ )
+				for (int k = 0; k < jc.Length - 1; k++)
 				{
-					if( k < tmp.Length )
+					if (k < tmp.Length)
 						c = tmp[k];
 					jc[k] = c;
 				}
 
 				// last one is the nzMax
-				jc[jc.Length-1] = _nzMax;
+				jc[jc.Length - 1] = _nzMax;
 
 				return jc;
 			}
@@ -191,9 +195,9 @@ namespace csmatio.types
 		/// <returns>Array Element</returns>
 		public override double GetReal(int M, int N)
 		{
-			IndexMN i = new IndexMN( M, N );
-			if( _real.ContainsKey( i ) )
-				return _real[ i ];
+			IndexMN i = new IndexMN(M, N);
+			if (_real.ContainsKey(i))
+				return _real[i];
 			return (double)0;
 		}
 
@@ -204,10 +208,10 @@ namespace csmatio.types
 		/// <returns>Array Element.</returns>
 		/// <exception cref="ArgumentException">Always becuase a sparse array cannot be
 		/// access by a column-packed index.</exception>
-		public override double GetReal( int Index )
-		{ 
+		public override double GetReal(int Index)
+		{
 			throw new ArgumentException("Can't get Sparse array elements by index. " +
-				"Please use GetReal( int M, int N ) instead." );
+				"Please use GetReal( int M, int N ) instead.");
 		}
 
 		/// <summary>
@@ -216,12 +220,12 @@ namespace csmatio.types
 		/// <param name="Val">The element value.</param>
 		/// <param name="M">The row index.</param>
 		/// <param name="N">The column index.</param>
-		public override void SetReal( double Val, int M, int N )
+		public override void SetReal(double Val, int M, int N)
 		{
-			IndexMN i = new IndexMN(M,N);
-			if( !_indexSet.Contains( i ) )
-				_indexSet.Add( i );
-			_real.Add( i, Val );
+			IndexMN i = new IndexMN(M, N);
+			if (!_indexSet.Contains(i))
+				_indexSet.Add(i);
+			_real.Add(i, Val);
 		}
 
 		/// <summary>
@@ -231,10 +235,10 @@ namespace csmatio.types
 		/// <param name="Index">Column-packed vector index.</param>
 		/// <exception cref="ArgumentException">Always becuase a sparse array cannot be
 		/// access by a column-packed index.</exception>
-		public override void SetReal( double Val, int Index )
+		public override void SetReal(double Val, int Index)
 		{
 			throw new ArgumentException("Can't set Sparse array elements by index. " +
-				"Please use SetReal( object Val, int M, int N ) instead." );
+				"Please use SetReal( object Val, int M, int N ) instead.");
 		}
 
 		/// <summary>
@@ -243,15 +247,15 @@ namespace csmatio.types
 		/// <param name="M">Row index</param>
 		/// <param name="N">Column index</param>
 		/// <returns>Array element</returns>
-		public override double GetImaginary( int M, int N )
+		public override double GetImaginary(int M, int N)
 		{
-            if (IsComplex)
-            {
-                IndexMN i = new IndexMN(M, N);
-                if (_imaginary.ContainsKey(i))
-                    return _imaginary[i];
-            }
-	        return (double)0;
+			if (IsComplex)
+			{
+				IndexMN i = new IndexMN(M, N);
+				if (_imaginary.ContainsKey(i))
+					return _imaginary[i];
+			}
+			return (double)0;
 		}
 
 		/// <summary>
@@ -261,10 +265,10 @@ namespace csmatio.types
 		/// <returns>Array Element</returns>
 		/// <exception cref="ArgumentException">Always becuase a sparse array cannot be
 		/// access by a column-packed index.</exception>
-		public override double GetImaginary( int Index )
+		public override double GetImaginary(int Index)
 		{
 			throw new ArgumentException("Can't get Sparse array elements by index. " +
-				"Please use GetImaginary( int M, int N ) instead." );
+				"Please use GetImaginary( int M, int N ) instead.");
 		}
 
 		/// <summary>
@@ -273,15 +277,15 @@ namespace csmatio.types
 		/// <param name="Val">Element value.</param>
 		/// <param name="M">Row Index.</param>
 		/// <param name="N">Column Index.</param>
-		public override void SetImaginary( double Val, int M, int N )
+		public override void SetImaginary(double Val, int M, int N)
 		{
-            if (IsComplex)
-            {
-                IndexMN i = new IndexMN(M, N);
-                if (!_indexSet.Contains(i))
-                    _indexSet.Add(i);
-                _imaginary.Add(i, (double)Val);
-            }
+			if (IsComplex)
+			{
+				IndexMN i = new IndexMN(M, N);
+				if (!_indexSet.Contains(i))
+					_indexSet.Add(i);
+				_imaginary.Add(i, (double)Val);
+			}
 		}
 
 		/// <summary>
@@ -291,10 +295,10 @@ namespace csmatio.types
 		/// <param name="Index">Column-packed vector index.</param>
 		/// /// <exception cref="ArgumentException">Always becuase a sparse array cannot be
 		/// access by a column-packed index.</exception>
-		public override void SetImaginary( double Val, int Index )
+		public override void SetImaginary(double Val, int Index)
 		{
 			throw new ArgumentException("Can't get Sparse array elements by index. " +
-				"Please use SetImaginary( int M, int N ) instead." );
+				"Please use SetImaginary( int M, int N ) instead.");
 		}
 
 		/// <summary>
@@ -305,7 +309,7 @@ namespace csmatio.types
 		{
 			double[] ad = new double[_nzMax];
 			int i = 0;
-			foreach( double d in _real.Values )
+			foreach (double d in _real.Values)
 				ad[i++] = d;
 			return ad;
 		}
@@ -318,21 +322,21 @@ namespace csmatio.types
 		{
 			double[] ad = new double[_nzMax];
 			int i = 0;
-			foreach( double d in _imaginary.Values )
+			foreach (double d in _imaginary.Values)
 				ad[i++] = d;
 			return ad;
 		}
 
-         /// <summary>Gets the flags for this array.</summary>
-        public override int Flags
-        {
-            get
-            {
-                return (int)((uint)(_type & MLArray.mtFLAG_TYPE)
-                    | (uint)(base._attributes & 0xFFFFFF00));
-            }
-        }
-        
+		/// <summary>Gets the flags for this array.</summary>
+		public override int Flags
+		{
+			get
+			{
+				return (int)((uint)(_type & MLArray.mtFLAG_TYPE)
+					| (uint)(base._attributes & 0xFFFFFF00));
+			}
+		}
+
 
 		/// <summary>
 		/// Get a string representation for the content of the array.
@@ -342,14 +346,14 @@ namespace csmatio.types
 		public override string ContentToString()
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			sb.Append( Name + " = \n" );
+			sb.Append(Name + " = \n");
 
-			foreach( IndexMN i in _indexSet )
+			foreach (IndexMN i in _indexSet)
 			{
 				sb.Append("\t(" + i.M + "," + i.N + ")");
-				sb.Append("\t" + GetReal(i.M, i.N) );
-				if( IsComplex )
-					sb.Append("+" + GetImaginary(i.M, i.N) );
+				sb.Append("\t" + GetReal(i.M, i.N));
+				if (IsComplex)
+					sb.Append("+" + GetImaginary(i.M, i.N));
 				sb.Append("\n");
 			}
 
@@ -357,51 +361,22 @@ namespace csmatio.types
 		}
 
 		/// <summary>
-		/// Gets the number of bytes allocated for a type
-		/// </summary>
-		public unsafe override int GetBytesAllocated
-		{
-			get
-			{
-				return sizeof(double);
-			}
-		}
-
-		/// <summary>
 		/// Builds a numeric object from a byte array.
 		/// </summary>
 		/// <param name="bytes">A byte array containing the data.</param>
 		/// <returns>A numeric object</returns>
-		/// <exception cref="ArgumentException">Thrown when there are insufficient bytes in the
-		/// byte array to create a <c>double</c></exception>
-        public override object BuildFromBytes(byte[] bytes)
+		protected override object BuildFromBytes2(byte[] bytes)
 		{
-			if( bytes.Length != GetBytesAllocated )
-			{
-				throw new ArgumentException( 
-					"To build from a byte array, I need an array of size: " + GetBytesAllocated );
-			}
-			return BitConverter.ToDouble( bytes, 0 );
+			return BitConverter.ToDouble(bytes, 0);
 		}
-		
+
 		/// <summary>
 		/// Gets a byte array from a numeric object.
 		/// </summary>
 		/// <param name="val">The numeric object to convert into a byte array.</param>
-        public override byte[] GetByteArray(object val)
+		public override byte[] GetByteArray(object val)
 		{
-			return BitConverter.GetBytes( (double)val );
+			return BitConverter.GetBytes((double)val);
 		}
-
-		/// <summary>
-		/// Gets the type of numeric object that this byte storage represents
-		/// </summary>
-		public override Type GetStorageType
-		{ 
-			get
-			{
-				return typeof(double);
-			}
-		} 
 	}
 }
