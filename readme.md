@@ -40,6 +40,16 @@ David A. Zier
 
 # CHANGE LOG #
 
+## r13, 2014-10-15 ##
+
+Switch from VS2005 to VS2013
+
+- Default Target Framework Version is now v4.0
+- v4.0 builds now eliminates the use of zlib.dll for (de)compressing,
+  using System.IO.Compression instead.
+  See https://sourceforge.net/p/csmatio/discussion/general/thread/3f380db4/
+- v2.0 build ist still possible, see batch file "BuildAllReleaseVersions.bat"
+
 ## r11+r12, 2014-10-15 ##
 
 FIXED sf ticket [#2]: "support all data types"

@@ -186,7 +186,12 @@ namespace CSMatIOTest
 
         private static MLArray CreateCharArray()
         {
-            return new MLChar("AName", "Hello World!");
+#if NET20
+            return new MLChar("AName", "Hello World v2.0!");
+#endif
+#if NET40
+			return new MLChar("AName", "Hello World v4.0!");
+#endif
         }
 
         private static MLArray CreateSparseArray()

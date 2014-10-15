@@ -1,14 +1,22 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.Text;
 
 using csmatio.common;
 using csmatio.types;
 
+#if !NET20 && !NET40
+#error .NET-Version undefiniert
+#endif
+
+#if NET20
 using zlib = ComponentAce.Compression.Libs.ZLib;
-//using ICSharpCode.SharpZipLib.GZip;
+#endif
+
+#if NET40
+using System.IO.Compression;
+#endif
 
 namespace csmatio.io
 {
@@ -37,11 +45,11 @@ namespace csmatio.io
 		/// <summary>
 		/// Contianer for read <c>MLArray</c>s
 		/// </summary>
-		private Dictionary<string,MLArray> _data;
-//		/// <summary>
-//		/// Tells how bytes are organized in the buffer
-//		/// </summary>
-//		private ByteOrder _byteData;
+		private Dictionary<string, MLArray> _data;
+		//		/// <summary>
+		//		/// Tells how bytes are organized in the buffer
+		//		/// </summary>
+		//		private ByteOrder _byteData;
 		/// <summary>
 		/// Array name filter
 		/// </summary>
@@ -56,8 +64,8 @@ namespace csmatio.io
 		/// This method reads MAT-file without filtering.
 		/// </remarks>
 		/// <param name="fileName">The name of the MAT-file to open</param>
-		public MatFileReader( string fileName ) :
-			this( fileName, new MatFileFilter() )
+		public MatFileReader(string fileName) :
+			this(fileName, new MatFileFilter())
 		{
 		}
 
@@ -72,20 +80,20 @@ namespace csmatio.io
 		/// </remarks>
 		/// <param name="fileName">The name of the MAT-file to open</param>
 		/// <param name="filter"><c>MatFileFilter</c></param>
-		public MatFileReader( string fileName, MatFileFilter filter )
+		public MatFileReader(string fileName, MatFileFilter filter)
 		{
 			_filter = filter;
-			_data = new Dictionary<string,MLArray>();
-			
+			_data = new Dictionary<string, MLArray>();
+
 			// Try to open up the file as read-only
 			FileStream dataIn;
-			try 
+			try
 			{
-				dataIn = new FileStream( fileName, FileMode.Open, FileAccess.Read );
+				dataIn = new FileStream(fileName, FileMode.Open, FileAccess.Read);
 			}
-			catch( FileNotFoundException )
+			catch (FileNotFoundException)
 			{
-				throw new MatlabIOException("Could not open the file '" + fileName + "' for reading!" );
+				throw new MatlabIOException("Could not open the file '" + fileName + "' for reading!");
 			}
 
 			// try and read in the file until completed
@@ -93,7 +101,7 @@ namespace csmatio.io
 			{
 				ReadHeader(dataIn);
 
-				for (;;)
+				for (; ; )
 				{
 					ReadData(dataIn);
 				}
@@ -111,13 +119,13 @@ namespace csmatio.io
 				dataIn.Close();
 			}
 		}
-		
+
 		/// <summary>
 		/// Gets MAT-file header.
 		/// </summary>
 		public MatFileHeader MatFileHeader
 		{
-			get{ return _matFileHeader; }
+			get { return _matFileHeader; }
 		}
 
 		/// <summary>
@@ -125,7 +133,7 @@ namespace csmatio.io
 		/// </summary>
 		public List<MLArray> Data
 		{
-			get{ return new List<MLArray>( _data.Values ); }
+			get { return new List<MLArray>(_data.Values); }
 		}
 
 		/// <summary>
@@ -137,18 +145,18 @@ namespace csmatio.io
 		/// <param name="name">Array name</param>
 		/// <returns>The <c>MLArray</c> to which this file maps the specific name,
 		/// or null if the file contains no content for this name</returns>
-		public MLArray GetMLArray( string name )
+		public MLArray GetMLArray(string name)
 		{
-			return _data.ContainsKey( name ) ? (MLArray)_data[ name ] : null;
+			return _data.ContainsKey(name) ? (MLArray)_data[name] : null;
 		}
 
 		/// <summary>
 		/// Returns a map of <c>MLArray</c> objects that were inside MAT-file.
 		/// </summary>
 		/// <remarks>MLArrays are keyed with the MLArrays' name.</remarks>
-		public Dictionary<string,MLArray> Content
+		public Dictionary<string, MLArray> Content
 		{
-			get{ return _data; }
+			get { return _data; }
 		}
 
 		/// <summary>
@@ -161,12 +169,12 @@ namespace csmatio.io
 		/// <param name="numOfBytes">The number of bytes to be read.</param>
 		/// <returns>new <c>ByteBuffer</c> with the inflated block of data.</returns>
 		/// <exception cref="IOException">When an error occurs while reading or inflating the buffer.</exception>
-		private Stream Inflate( Stream buf, int numOfBytes )
+		private Stream Inflate(Stream buf, int numOfBytes)
 		{
-            if (buf.Length - buf.Position < numOfBytes)
-            {
-                throw new MatlabIOException("Compressed buffer length miscalculated!");
-            }
+			if (buf.Length - buf.Position < numOfBytes)
+			{
+				throw new MatlabIOException("Compressed buffer length miscalculated!");
+			}
 
 #if false
 			// test code!
@@ -176,10 +184,12 @@ namespace csmatio.io
 			buf.Position = pos;
 			File.WriteAllBytes("DeflatedMatlabData.bin", byteBuffer);
 #endif
-			MemoryStream inflatedStream = new MemoryStream(numOfBytes);
 
 			try
-            {
+			{
+#if NET20
+				MemoryStream inflatedStream = new MemoryStream(numOfBytes);
+
 				// copy all the compressed bytes to a new stream.
 				byte[] compressedBytes = new byte[numOfBytes];
 				int numBytesRead = buf.Read(compressedBytes, 0, numOfBytes);
@@ -193,15 +203,51 @@ namespace csmatio.io
 				zlib.ZInputStream zis = new zlib.ZInputStream(compressedStream);
 				Helpers.CopyStream(zis, inflatedStream);
 				zis.Close();
+
+				inflatedStream.Position = 0;
+				return inflatedStream;
+#endif
+#if NET40
+				// skip CRC (at end) and zip format (0x789C at begin)
+				buf.Position += 2;
+				numOfBytes -= 6;
+
+				MemoryStream compressedStream = new MemoryStream();
+				int data;
+				do
+				{
+					data = buf.ReadByte();
+					if (data != -1)
+					{
+						compressedStream.WriteByte((byte)(data & 0x000000FF));
+					}
+				}
+				while (data != -1 && compressedStream.Length < numOfBytes);
+
+				// skip CRC
+				buf.Position += 4;
+				compressedStream.Position = 0;
+				MemoryStream decompressedStream = new MemoryStream();
+				using (DeflateStream df = new DeflateStream(compressedStream, CompressionMode.Decompress))
+				{
+					do
+					{
+						data = df.ReadByte();
+						if (data != -1)
+						{
+							decompressedStream.WriteByte((byte)(data & 0x000000FF));
+						}
+					}
+					while (data != -1);
+				}
+				decompressedStream.Position = 0; 
+				return decompressedStream;
+#endif
 			}
-            catch (IOException e)
-            {
-                throw new MatlabIOException("Could not decompress data: " + e);
-            }
-
-            inflatedStream.Position = 0;
-
-            return inflatedStream;
+			catch (IOException e)
+			{
+				throw new MatlabIOException("Could not decompress data: " + e);
+			}
 		}
 
 		/// <summary>
@@ -213,12 +259,12 @@ namespace csmatio.io
 		/// to this same method.
 		/// </remarks>
 		/// <param name="buf">The input <c>BinaryReader</c> stream.</param>
-		private void ReadData( Stream buf )
+		private void ReadData(Stream buf)
 		{
-            // read data
-            ISMatTag tag = new ISMatTag(buf);
-            switch (tag.Type)
-            {
+			// read data
+			ISMatTag tag = new ISMatTag(buf);
+			switch (tag.Type)
+			{
 				case MatDataTypes.miCOMPRESSED:
 					// inflate and recur
 					{
@@ -227,36 +273,36 @@ namespace csmatio.io
 						uncompressed.Close();
 					}
 					break;
-                case MatDataTypes.miMATRIX:
-                    // read in the matrix
-                    int pos = (int)buf.Position;
-                    int red, toread;
+				case MatDataTypes.miMATRIX:
+					// read in the matrix
+					int pos = (int)buf.Position;
+					int red, toread;
 
-                    MLArray element = ReadMatrix(buf, true);
+					MLArray element = ReadMatrix(buf, true);
 
-                    if (element != null)
-                    {
-                        _data.Add(element.Name, element);
-                    }
-                    else
-                    {
-                        red = (int)buf.Position - pos;
-                        toread = tag.Size - red;
-                        buf.Position = buf.Position + toread;
-                    }
-                    red = (int)buf.Position - pos;
+					if (element != null)
+					{
+						_data.Add(element.Name, element);
+					}
+					else
+					{
+						red = (int)buf.Position - pos;
+						toread = tag.Size - red;
+						buf.Position = buf.Position + toread;
+					}
+					red = (int)buf.Position - pos;
 
-                    toread = tag.Size - red;
+					toread = tag.Size - red;
 
-                    if (toread != 0)
-                    {
-                        throw new MatlabIOException("Matrix was not read fully! " + toread + " remaining in the buffer.");
-                    }
-                    break;
-                default:
-                    throw new MatlabIOException("Incorrect data tag: " + tag);
+					if (toread != 0)
+					{
+						throw new MatlabIOException("Matrix was not read fully! " + toread + " remaining in the buffer.");
+					}
+					break;
+				default:
+					throw new MatlabIOException("Incorrect data tag: " + tag);
 
-            }
+			}
 		}
 
 		/// <summary>
@@ -270,112 +316,112 @@ namespace csmatio.io
 		/// <param name="isRoot">When <c>true</c> informs that if this is a top level
 		/// matrix.</param>
 		/// <returns><c>MLArray</c> or <c>null</c> if matrix does not match <c>filter</c></returns>
-		private MLArray ReadMatrix( Stream buf, bool isRoot )
+		private MLArray ReadMatrix(Stream buf, bool isRoot)
 		{
 			// result
 			MLArray mlArray = null;
 			ISMatTag tag;
 
 			// read flags
-			int[] flags = ReadFlags( buf );
-			int attributes = (flags.Length != 0 ) ? flags[0] : 0;
-			int nzmax = ( flags.Length != 0 ) ? flags[1] : 0;
+			int[] flags = ReadFlags(buf);
+			int attributes = (flags.Length != 0) ? flags[0] : 0;
+			int nzmax = (flags.Length != 0) ? flags[1] : 0;
 			int type = attributes & 0xff;
 
 			// read Array dimension
-			int[] dims = ReadDimension( buf );
+			int[] dims = ReadDimension(buf);
 
 			// read Array name
-			string name = ReadName( buf );
+			string name = ReadName(buf);
 
 			// If this array is filtered out return immediately
-			if( isRoot && !_filter.Matches(name) )
+			if (isRoot && !_filter.Matches(name))
 			{
 				return null;
 			}
 
 			// read data
-            switch (type)
-            {
-                case MLArray.mxSTRUCT_CLASS:
-                    MLStructure mlStruct = new MLStructure(name, dims, type, attributes);
+			switch (type)
+			{
+				case MLArray.mxSTRUCT_CLASS:
+					MLStructure mlStruct = new MLStructure(name, dims, type, attributes);
 
-                    BinaryReader br = new BinaryReader(buf);
+					BinaryReader br = new BinaryReader(buf);
 
-                    // field name length - this subelement always uses the compressed data element format
-                    tag = new ISMatTag(br.BaseStream);
-                    int maxlen = br.ReadInt32();
+					// field name length - this subelement always uses the compressed data element format
+					tag = new ISMatTag(br.BaseStream);
+					int maxlen = br.ReadInt32();
 
-                    // Read fields data as Int8
-                    tag = new ISMatTag(br.BaseStream);
-                    // calculate number of fields
-                    int numOfFields = tag.Size / maxlen;
+					// Read fields data as Int8
+					tag = new ISMatTag(br.BaseStream);
+					// calculate number of fields
+					int numOfFields = tag.Size / maxlen;
 
-                    // padding after field names
-                    int padding = (tag.Size % 8) != 0 ? 8 - tag.Size % 8 : 0;
+					// padding after field names
+					int padding = (tag.Size % 8) != 0 ? 8 - tag.Size % 8 : 0;
 
-                    string[] fieldNames = new string[numOfFields];
-                    for (int i = 0; i < numOfFields; i++)
-                    {
-                        byte[] names = new byte[maxlen];
-                        br.Read(names, 0, names.Length);
-                        fieldNames[i] = ZeroEndByteArrayToString(names);
-                    }
-                    br.ReadBytes(padding);
+					string[] fieldNames = new string[numOfFields];
+					for (int i = 0; i < numOfFields; i++)
+					{
+						byte[] names = new byte[maxlen];
+						br.Read(names, 0, names.Length);
+						fieldNames[i] = ZeroEndByteArrayToString(names);
+					}
+					br.ReadBytes(padding);
 
-                    // read fields
-                    for (int index = 0; index < mlStruct.M * mlStruct.N; index++)
-                    {
-                        for (int i = 0; i < numOfFields; i++)
-                        {
-                            // read matrix recursively
-                            tag = new ISMatTag(br.BaseStream);
-                            if (tag.Size > 0)
-                            {
-                                MLArray fieldValue = ReadMatrix(br.BaseStream, false);
-                                mlStruct[fieldNames[i], index] = fieldValue;
-                            }
-                            else
-                            {
-                                mlStruct[fieldNames[i], index] = new MLEmptyArray();
-                            }
-                        }
-                    }
-                    mlArray = mlStruct;
-                    //br.Close();
-                    break;
-                case MLArray.mxCELL_CLASS:
-                    MLCell cell = new MLCell(name, dims, type, attributes);
-                    for (int i = 0; i < cell.M * cell.N; i++)
-                    {
-                        tag = new ISMatTag(buf);
-                        if (tag.Size > 0)
-                        {
-                            MLArray cellmatrix = ReadMatrix(buf, false);
-                            cell[i] = cellmatrix;
-                        }
-                        else
-                        {
-                            cell[i] = new MLEmptyArray();
-                        }
-                    }
-                    mlArray = cell;
-                    break;
-                case MLArray.mxDOUBLE_CLASS:
-                    mlArray = new MLDouble(name, dims, type, attributes);
-                    //read real
-                    tag = new ISMatTag(buf);
-                    tag.ReadToByteBuffer(((MLNumericArray<double>)mlArray).RealByteBuffer,
+					// read fields
+					for (int index = 0; index < mlStruct.M * mlStruct.N; index++)
+					{
+						for (int i = 0; i < numOfFields; i++)
+						{
+							// read matrix recursively
+							tag = new ISMatTag(br.BaseStream);
+							if (tag.Size > 0)
+							{
+								MLArray fieldValue = ReadMatrix(br.BaseStream, false);
+								mlStruct[fieldNames[i], index] = fieldValue;
+							}
+							else
+							{
+								mlStruct[fieldNames[i], index] = new MLEmptyArray();
+							}
+						}
+					}
+					mlArray = mlStruct;
+					//br.Close();
+					break;
+				case MLArray.mxCELL_CLASS:
+					MLCell cell = new MLCell(name, dims, type, attributes);
+					for (int i = 0; i < cell.M * cell.N; i++)
+					{
+						tag = new ISMatTag(buf);
+						if (tag.Size > 0)
+						{
+							MLArray cellmatrix = ReadMatrix(buf, false);
+							cell[i] = cellmatrix;
+						}
+						else
+						{
+							cell[i] = new MLEmptyArray();
+						}
+					}
+					mlArray = cell;
+					break;
+				case MLArray.mxDOUBLE_CLASS:
+					mlArray = new MLDouble(name, dims, type, attributes);
+					//read real
+					tag = new ISMatTag(buf);
+					tag.ReadToByteBuffer(((MLNumericArray<double>)mlArray).RealByteBuffer,
                         (IByteStorageSupport)mlArray);
 
-                    // read complex
-                    if (mlArray.IsComplex)
-                    {
-                        tag = new ISMatTag(buf);
-                        tag.ReadToByteBuffer(((MLNumericArray<double>)mlArray).ImaginaryByteBuffer,
+					// read complex
+					if (mlArray.IsComplex)
+					{
+						tag = new ISMatTag(buf);
+						tag.ReadToByteBuffer(((MLNumericArray<double>)mlArray).ImaginaryByteBuffer,
                             (IByteStorageSupport)mlArray);
-                    }
-                    break;
+					}
+					break;
 				case MLArray.mxSINGLE_CLASS:
 					mlArray = new MLSingle(name, dims, type, attributes);
 					//read real
@@ -485,98 +531,98 @@ namespace csmatio.io
 					break;
 				case MLArray.mxUINT64_CLASS:
 					mlArray = new MLUInt64(name, dims, type, attributes);
-                    //read real
-                    tag = new ISMatTag(buf);
+					//read real
+					tag = new ISMatTag(buf);
 					tag.ReadToByteBuffer(((MLNumericArray<ulong>)mlArray).RealByteBuffer,
                         (IByteStorageSupport)mlArray);
 
-                    // read complex
-                    if (mlArray.IsComplex)
-                    {
+					// read complex
+					if (mlArray.IsComplex)
+					{
 						tag = new ISMatTag(buf);
                         tag.ReadToByteBuffer(((MLNumericArray<ulong>)mlArray).ImaginaryByteBuffer,
                             (IByteStorageSupport)mlArray);
-                    }
-                    break;
-                case MLArray.mxINT64_CLASS:
+					}
+					break;
+				case MLArray.mxINT64_CLASS:
 					mlArray = new MLInt64(name, dims, type, attributes);
-                    //read real
-                    tag = new ISMatTag(buf);
+					//read real
+					tag = new ISMatTag(buf);
 					tag.ReadToByteBuffer(((MLNumericArray<long>)mlArray).RealByteBuffer,
                         (IByteStorageSupport)mlArray);
 
-                    // read complex
-                    if (mlArray.IsComplex)
-                    {
+					// read complex
+					if (mlArray.IsComplex)
+					{
 						tag = new ISMatTag(buf);
                         tag.ReadToByteBuffer(((MLNumericArray<long>)mlArray).ImaginaryByteBuffer,
                             (IByteStorageSupport)mlArray);
-                    }
-                    break;
-                case MLArray.mxCHAR_CLASS:
-                    MLChar mlchar = new MLChar(name, dims, type, attributes);
-                    //read real
-                    tag = new ISMatTag(buf);
-                    char[] ac = tag.ReadToCharArray();
-                    for (int i = 0; i < ac.Length; i++)
-                    {
-                        mlchar.SetChar(ac[i], i);
-                    }
-                    mlArray = mlchar;
-                    break;
-                case MLArray.mxSPARSE_CLASS:
-                    MLSparse sparse = new MLSparse(name, dims, attributes, nzmax);
+					}
+					break;
+				case MLArray.mxCHAR_CLASS:
+					MLChar mlchar = new MLChar(name, dims, type, attributes);
+					//read real
+					tag = new ISMatTag(buf);
+					char[] ac = tag.ReadToCharArray();
+					for (int i = 0; i < ac.Length; i++)
+					{
+						mlchar.SetChar(ac[i], i);
+					}
+					mlArray = mlchar;
+					break;
+				case MLArray.mxSPARSE_CLASS:
+					MLSparse sparse = new MLSparse(name, dims, attributes, nzmax);
 
-                    // read ir (row indices)
-                    tag = new ISMatTag(buf);
-                    int[] ir = tag.ReadToIntArray();
-                    // read jc (column indices)
-                    tag = new ISMatTag(buf);
-                    int[] jc = tag.ReadToIntArray();
+					// read ir (row indices)
+					tag = new ISMatTag(buf);
+					int[] ir = tag.ReadToIntArray();
+					// read jc (column indices)
+					tag = new ISMatTag(buf);
+					int[] jc = tag.ReadToIntArray();
 
-                    // read pr (real part)
-                    tag = new ISMatTag(buf);
-                    double[] ad1 = tag.ReadToDoubleArray();
-                    int n = 0;
-                    for (int i = 0; i < ir.Length; i++)
-                    {
-                        if (i < sparse.N)
-                        {
-                            n = jc[i];
-                        }
-                        sparse.SetReal(ad1[i], ir[i], n);
-                    }
+					// read pr (real part)
+					tag = new ISMatTag(buf);
+					double[] ad1 = tag.ReadToDoubleArray();
+					int n = 0;
+					for (int i = 0; i < ir.Length; i++)
+					{
+						if (i < sparse.N)
+						{
+							n = jc[i];
+						}
+						sparse.SetReal(ad1[i], ir[i], n);
+					}
 
-                    //read pi (imaginary part)
-                    if (sparse.IsComplex)
-                    {
-                        tag = new ISMatTag(buf);
-                        double[] ad2 = tag.ReadToDoubleArray();
+					//read pi (imaginary part)
+					if (sparse.IsComplex)
+					{
+						tag = new ISMatTag(buf);
+						double[] ad2 = tag.ReadToDoubleArray();
 
-                        int n1 = 0;
-                        for (int i = 0; i < ir.Length; i++)
-                        {
-                            if (i < sparse.N)
-                            {
-                                n1 = jc[i];
-                            }
-                            sparse.SetImaginary(ad2[i], ir[i], n1);
-                        }
-                    }
-                    mlArray = sparse;
-                    break;
-                default:
-                    throw new MatlabIOException("Incorrect Matlab array class: " + MLArray.TypeToString(type));
-            }
-            return mlArray;
+						int n1 = 0;
+						for (int i = 0; i < ir.Length; i++)
+						{
+							if (i < sparse.N)
+							{
+								n1 = jc[i];
+							}
+							sparse.SetImaginary(ad2[i], ir[i], n1);
+						}
+					}
+					mlArray = sparse;
+					break;
+				default:
+					throw new MatlabIOException("Incorrect Matlab array class: " + MLArray.TypeToString(type));
+			}
+			return mlArray;
 		}
 
-        /// <summary>
-        /// Converts a byte array to <c>string</c>.  It assumes that the string ends with \0 value.
-        /// </summary>
-        /// <param name="bytes">Byte array containing the string.</param>
-        /// <returns>String retrieved from byte array</returns>
-        private string ZeroEndByteArrayToString(byte[] bytes)
+		/// <summary>
+		/// Converts a byte array to <c>string</c>.  It assumes that the string ends with \0 value.
+		/// </summary>
+		/// <param name="bytes">Byte array containing the string.</param>
+		/// <returns>String retrieved from byte array</returns>
+		private string ZeroEndByteArrayToString(byte[] bytes)
 		{
 			StringBuilder sb = new StringBuilder();
 			foreach (byte b in bytes)
@@ -588,14 +634,14 @@ namespace csmatio.io
 			return sb.ToString();
 		}
 
-        /// <summary>
-        /// Reads Matrix flags.
-        /// </summary>
-        /// <param name="buf"><c>BinaryReader</c> input stream</param>
-        /// <returns>Flags int array</returns>
-        private int[] ReadFlags(Stream buf)
+		/// <summary>
+		/// Reads Matrix flags.
+		/// </summary>
+		/// <param name="buf"><c>BinaryReader</c> input stream</param>
+		/// <returns>Flags int array</returns>
+		private int[] ReadFlags(Stream buf)
 		{
-			ISMatTag tag = new ISMatTag( buf );
+			ISMatTag tag = new ISMatTag(buf);
 
 			int[] flags = tag.ReadToIntArray();
 
@@ -607,9 +653,9 @@ namespace csmatio.io
 		/// </summary>
 		/// <param name="buf"><c>BinaryReader</c> input stream</param>
 		/// <returns>Dimensions int array</returns>
-		private int[] ReadDimension( Stream buf )
+		private int[] ReadDimension(Stream buf)
 		{
-			ISMatTag tag = new ISMatTag( buf );
+			ISMatTag tag = new ISMatTag(buf);
 			int[] dims = tag.ReadToIntArray();
 			return dims;
 		}
@@ -619,11 +665,11 @@ namespace csmatio.io
 		/// </summary>
 		/// <param name="buf"><c>BinaryReader</c> input stream</param>
 		/// <returns><c>string</c></returns>
-		private string ReadName( Stream buf )
+		private string ReadName(Stream buf)
 		{
 			string s;
 
-			ISMatTag tag = new ISMatTag( buf );
+			ISMatTag tag = new ISMatTag(buf);
 			char[] ac = tag.ReadToCharArray();
 			s = new string(ac);
 
@@ -634,37 +680,37 @@ namespace csmatio.io
 		/// Reads MAT-file header.
 		/// </summary>
 		/// <param name="buf"><c>BinaryReader</c> input stream</param>
-		private void ReadHeader( Stream buf )
+		private void ReadHeader(Stream buf)
 		{
 			string description;
 			int version;
-            BinaryReader br = new BinaryReader(buf);
+			BinaryReader br = new BinaryReader(buf);
 			byte[] endianIndicator = new byte[2];
 
 			//descriptive text 116 bytes
 			byte[] descriptionBuffer = new byte[116];
-			br.Read( descriptionBuffer, 0, descriptionBuffer.Length );
+			br.Read(descriptionBuffer, 0, descriptionBuffer.Length);
 
-			description = ZeroEndByteArrayToString( descriptionBuffer );
+			description = ZeroEndByteArrayToString(descriptionBuffer);
 
-			if( !description.StartsWith("MATLAB 5.0 MAT-file") )
+			if (!description.StartsWith("MATLAB 5.0 MAT-file"))
 			{
 				throw new MatlabIOException("This is not a valid MATLAB 5.0 MAT-file.");
 			}
 
 			// subsyst data offset 8 bytes
-			br.ReadBytes( 8 );
+			br.ReadBytes(8);
 
-			byte[] bversion= new byte[2];
+			byte[] bversion = new byte[2];
 			//version 2 bytes
-			br.Read( bversion, 0, bversion.Length );
+			br.Read(bversion, 0, bversion.Length);
 
 			//endian indicator 2 bytes
-			br.Read( endianIndicator, 0, endianIndicator.Length );
+			br.Read(endianIndicator, 0, endianIndicator.Length);
 
 			// Program reading the MAT-file must perform byte swapping to interpret the data
 			// in the MAT-file correctly
-			if( (char)endianIndicator[0] == 'I' && (char)endianIndicator[1] == 'M' )
+			if ((char)endianIndicator[0] == 'I' && (char)endianIndicator[1] == 'M')
 			{
 				// We have a Little Endian MAT-file
 				version = bversion[1] & 0xff | bversion[0] << 8;
@@ -675,7 +721,7 @@ namespace csmatio.io
 				throw new MatlabIOException("This version of CSMatIO does not support Big Endian.");
 			}
 
-			_matFileHeader = new MatFileHeader( description, version, endianIndicator );
+			_matFileHeader = new MatFileHeader(description, version, endianIndicator);
 		}
 
 		/// <summary>
@@ -697,15 +743,15 @@ namespace csmatio.io
 			/// Create an ISMatTag from a <c>ByteBuffer</c>.
 			/// </summary>
 			/// <param name="buf"><c>ByteBuffer</c></param>
-			public ISMatTag( Stream buf ) :
-				base( 0, 0 )
+			public ISMatTag(Stream buf) :
+				base(0, 0)
 			{
 				Buf = new BinaryReader(buf);
 				int tmp = Buf.ReadInt32();
 
 				bool compressed;
 				// data not packed in the tag
-				if( tmp >> 16 == 0 )
+				if (tmp >> 16 == 0)
 				{
 					_type = tmp;
 					_size = Buf.ReadInt32();
@@ -717,18 +763,18 @@ namespace csmatio.io
 					_type = tmp & 0xffff; // 2 less significant bytes
 					compressed = true;
 				}
-				
-                
-                padding = GetPadding( _size, compressed );
+
+
+				padding = GetPadding(_size, compressed);
 			}
 
-            ///// <summary>
-            ///// Gets the size of the <c>ISMatTag</c>
-            ///// </summary>
-            //public int Size
-            //{
-            //    get { return (int)Buf.BaseStream.Length; }
-            //}
+			///// <summary>
+			///// Gets the size of the <c>ISMatTag</c>
+			///// </summary>
+			//public int Size
+			//{
+			//    get { return (int)Buf.BaseStream.Length; }
+			//}
 
 			/// <summary>
 			/// Read MAT-file tag to a byte buffer.
@@ -737,12 +783,12 @@ namespace csmatio.io
 			/// <param name="storage"><c>ByteStorageSupport</c></param>
 			public void ReadToByteBuffer( ByteBuffer buff, IByteStorageSupport storage )
 			{
-				MatFileInputStream mfis = new MatFileInputStream( Buf, _type );
+				MatFileInputStream mfis = new MatFileInputStream(Buf, _type);
 				int elements = _size / SizeOf();
-				mfis.ReadToByteBuffer( buff, elements, storage );
+				mfis.ReadToByteBuffer(buff, elements, storage);
 				//skip padding
-				if( padding > 0 )
-					Buf.ReadBytes( padding );
+				if (padding > 0)
+					Buf.ReadBytes(padding);
 			}
 
 			/// <summary>
@@ -755,14 +801,14 @@ namespace csmatio.io
 				int elements = _size / SizeOf();
 				byte[] ab = new byte[elements];
 
-				MatFileInputStream mfis = new MatFileInputStream( Buf, _type );
+				MatFileInputStream mfis = new MatFileInputStream(Buf, _type);
 
-				for( int i = 0; i < elements; i++ )
+				for (int i = 0; i < elements; i++)
 					ab[i] = mfis.ReadByte();
 
 				// skip padding
-				if( padding > 0 )
-					Buf.ReadBytes( padding );
+				if (padding > 0)
+					Buf.ReadBytes(padding);
 				return ab;
 			}
 
@@ -776,14 +822,14 @@ namespace csmatio.io
 				int elements = _size / SizeOf();
 				double[] ad = new double[elements];
 
-				MatFileInputStream mfis = new MatFileInputStream( Buf, _type );
+				MatFileInputStream mfis = new MatFileInputStream(Buf, _type);
 
-				for( int i = 0; i < elements; i++ )
+				for (int i = 0; i < elements; i++)
 					ad[i] = mfis.ReadDouble();
 
 				// skip padding
-				if( padding > 0 )
-					Buf.ReadBytes( padding );
+				if (padding > 0)
+					Buf.ReadBytes(padding);
 				return ad;
 			}
 
@@ -797,14 +843,14 @@ namespace csmatio.io
 				int elements = _size / SizeOf();
 				int[] ai = new int[elements];
 
-				MatFileInputStream mfis = new MatFileInputStream( Buf, _type );
+				MatFileInputStream mfis = new MatFileInputStream(Buf, _type);
 
-				for( int i = 0; i < elements; i++ )
+				for (int i = 0; i < elements; i++)
 					ai[i] = mfis.ReadInt();
 
 				// skip padding
-				if( padding > 0 )
-					Buf.ReadBytes( padding );
+				if (padding > 0)
+					Buf.ReadBytes(padding);
 				return ai;
 			}
 
@@ -818,14 +864,14 @@ namespace csmatio.io
 				int elements = _size / SizeOf();
 				char[] ac = new char[elements];
 
-				MatFileInputStream mfis = new MatFileInputStream( Buf, _type );
+				MatFileInputStream mfis = new MatFileInputStream(Buf, _type);
 
-				for( int i = 0; i < elements; i++ )
+				for (int i = 0; i < elements; i++)
 					ac[i] = mfis.ReadChar();
 
 				// skip padding
-				if( padding > 0 )
-					Buf.ReadBytes( padding );
+				if (padding > 0)
+					Buf.ReadBytes(padding);
 				return ac;
 			}
 		}
