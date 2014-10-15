@@ -8,7 +8,7 @@ I found his work really useful. It had some bugs however, so I try to provide so
 
 CSMatIO uses ZLIB.NET (a managed version of the ZLIB library) to compress/decompress MAT-file content. ZLIB.NET is open source provided by ComponentAce (<http://www.componentace.com/>).
 
-Tobias
+For license text see below.
 
 ------------------------------------------------------------------------
 
@@ -39,6 +39,20 @@ David A. Zier
 ------------------------------------------------------------------------
 
 # CHANGE LOG #
+
+## r11+r12, 2014-10-15 ##
+
+FIXED sf ticket [#2]: "support all data types"
+
+- Cleaned up the type-dependent code and comments.
+- Changed the way several data types are read and written (I hope I changed it for good :-)
+- Added/fixed support for some missing data types.
+- Replaced some copy-and-paste-methods in the ML... classes with generic methods in MLNumericArray.cs,
+  reducing the total amount of code lines.
+- Added a button to the CSMatIOTest Form.
+- Renamed ByteStorageSupport.cs -> IByteStorageSupport.cs, GenericArrayCreator.cs -> IGenericArrayCreator.cs
+
+ATTENTION: csmatio now creates different binaries than before. This could result in compatibility issues in some cases.
 
 ## r10, 2014-10-15 ##
 
@@ -110,3 +124,62 @@ Currently supported data types are:
 + UInt32 array
 + Int64 array
 + UInt64 array
+
+------------------------------------------------------------------------
+
+# CSMatIO License #
+
+Copyright (c) 2007-2009, David Zier
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, 
+  this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice, 
+  this list of conditions and the following disclaimer 
+  in the documentation and/or other materials provided with the distribution.
+      
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGE. 
+
+# ZLIB.NET License #
+
+Copyright (c) 2006-2007, ComponentAce
+<http://www.componentace.com>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, 
+  this list of conditions and the following disclaimer. 
+* Redistributions in binary form must reproduce the above copyright notice, 
+  this list of conditions and the following disclaimer 
+  in the documentation and/or other materials provided with the distribution. 
+
+Neither the name of ComponentAce nor the names of its contributors 
+may be used to endorse or promote products derived from this software 
+without specific prior written permission. 
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGE.

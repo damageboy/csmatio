@@ -13,6 +13,8 @@ namespace CSMatIOTest
 {
     public partial class Main : Form
     {
+		private bool toggleCheck = false;
+
         public Main()
         {
             InitializeComponent();
@@ -141,6 +143,28 @@ namespace CSMatIOTest
             foreach (MLArray mla in mlList)
                 txtOutput.Text += mla.ContentToString() + "\n";    
         }
+
+		private void btnCheckEmAll_Click(object sender, EventArgs e)
+		{
+			toggleCheck = !toggleCheck;
+
+			chkCell.Checked =
+			chkStruct.Checked =
+			chkChar.Checked =
+			chkSparse.Checked =
+			chkDouble.Checked =
+			chkSingle.Checked =
+			chkInt8.Checked =
+			chkUInt8.Checked =
+			chkInt16.Checked =
+			chkUInt16.Checked =
+			chkInt32.Checked =
+			chkUInt32.Checked =
+			chkInt64.Checked =
+			chkUInt64.Checked =
+			chkImagMatrix.Checked =
+			toggleCheck;
+		}
 
         private static MLArray CreateCellArray()
         {
