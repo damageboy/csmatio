@@ -6,8 +6,9 @@ written by David Zier. He published his code on
 
 I found his work really useful. It had some bugs however, so I try to provide some fixes and enhancements here.
 
-Tobias
+CSMatIO uses ZLIB.NET (a managed version of the ZLIB library) to compress/decompress MAT-file content. ZLIB.NET is open source provided by ComponentAce (<http://www.componentace.com/>).
 
+Tobias
 
 ------------------------------------------------------------------------
 
@@ -38,6 +39,11 @@ David A. Zier
 ------------------------------------------------------------------------
 
 # CHANGE LOG #
+
+## r10, 2014-10-15 ##
+
+- FIX: removed "static" qualifier from MLNumericArray._bytes (see ticket [#7])
+- FIX: MatFileReader c'tor: close the dataIn file stream when Exception is thrown (see ticket [#8])
 
 ## r9, 2014-02-25 ##
 

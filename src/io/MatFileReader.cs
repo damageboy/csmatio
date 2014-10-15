@@ -91,23 +91,25 @@ namespace csmatio.io
 			// try and read in the file until completed
 			try
 			{
-				ReadHeader( dataIn );
+				ReadHeader(dataIn);
 
-				for(;;)
+				for (;;)
 				{
-					ReadData( dataIn );
+					ReadData(dataIn);
 				}
 			}
-			catch( EndOfStreamException )
+			catch (EndOfStreamException)
 			{
 				// Catch to break out of the for loop
 			}
-			catch( IOException e )
+			catch (IOException e)
 			{
-				throw new MatlabIOException( "Error in reading MAT-file '" + fileName + "':\n" + e.ToString() );
+				throw new MatlabIOException("Error in reading MAT-file '" + fileName + "':\n" + e.ToString());
 			}
-
-			dataIn.Close();
+			finally
+			{
+				dataIn.Close();
+			}
 		}
 		
 		/// <summary>

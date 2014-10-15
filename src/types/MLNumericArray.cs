@@ -13,7 +13,7 @@ namespace csmatio.types
 	{
 		private ByteBuffer _real;
 		private ByteBuffer _imaginary;
-		private static byte[] _bytes;
+		private byte[] _bytes;
 
 		/// <summary>
 		/// Constructs an abstract MLNumericArray class object
