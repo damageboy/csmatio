@@ -40,6 +40,11 @@ David A. Zier
 
 # CHANGE LOG #
 
+## r14, 2016-09-22 ##
+
+- Fixed a bug in the UTF handling implementation
+- Will now correctly read files that contain UTF8, UTF16, and UFT32 data.
+
 ## r13, 2014-10-15 ##
 
 Switch from VS2005 to VS2013

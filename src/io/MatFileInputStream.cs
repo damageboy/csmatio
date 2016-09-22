@@ -37,15 +37,18 @@ namespace csmatio.io
 			switch (_type)
 			{
 				case MatDataTypes.miUINT8:
-					return (int)(_buf.ReadByte() & 0xff);
+                case MatDataTypes.miUTF8:
+                    return (int)(_buf.ReadByte() & 0xff);
 				case MatDataTypes.miINT8:
 					return (int)_buf.ReadByte();
 				case MatDataTypes.miUINT16:
+                case MatDataTypes.miUTF16:
 					return (int)(_buf.ReadInt16() & 0xFFFF);
 				case MatDataTypes.miINT16:
 					return (int)_buf.ReadInt16();
 				case MatDataTypes.miUINT32:
-					return (int)(_buf.ReadInt32() & 0xFFFFFFFF);
+                case MatDataTypes.miUTF32:
+                    return (int)(_buf.ReadInt32() & 0xFFFFFFFF);
 				case MatDataTypes.miINT32:
 					return (int)_buf.ReadInt32();
 				case MatDataTypes.miUINT64:
@@ -57,7 +60,8 @@ namespace csmatio.io
 				case MatDataTypes.miDOUBLE:
 					return (int)_buf.ReadDouble();
 				default:
-					throw new ArgumentException("Unknown data type: " + _type);
+					throw new ArgumentException("Unknown data type: " + 
+                            MatDataTypes.TypeToString(_type));
 			}
 		}
 
@@ -72,15 +76,17 @@ namespace csmatio.io
 			switch (_type)
 			{
 				case MatDataTypes.miUINT8:
-					return (char)(_buf.ReadByte() & 0xff);
+                    return (char)(_buf.ReadByte() & 0xff);
 				case MatDataTypes.miINT8:
 					return (char)_buf.ReadByte();
 				case MatDataTypes.miUINT16:
-					return (char)(_buf.ReadInt16() & 0xFFFF);
+                case MatDataTypes.miUTF16:
+                    return (char)(_buf.ReadInt16() & 0xFFFF);
 				case MatDataTypes.miINT16:
 					return (char)_buf.ReadInt16();
 				case MatDataTypes.miUINT32:
-					return (char)(_buf.ReadInt32() & 0xFFFFFFFF);
+                case MatDataTypes.miUTF32:
+                    return (char)(_buf.ReadInt32() & 0xFFFFFFFF);
 				case MatDataTypes.miINT32:
 					return (char)_buf.ReadInt32();
 				case MatDataTypes.miDOUBLE:
@@ -103,15 +109,18 @@ namespace csmatio.io
 			switch (_type)
 			{
 				case MatDataTypes.miUINT8:
-					return (double)(_buf.ReadByte() & 0xff);
+                case MatDataTypes.miUTF8:
+                    return (double)(_buf.ReadByte() & 0xff);
 				case MatDataTypes.miINT8:
 					return (double)_buf.ReadByte();
 				case MatDataTypes.miUINT16:
-					return (double)(_buf.ReadInt16() & 0xFFFF);
+                case MatDataTypes.miUTF16:
+                    return (double)(_buf.ReadInt16() & 0xFFFF);
 				case MatDataTypes.miINT16:
 					return (double)_buf.ReadInt16();
 				case MatDataTypes.miUINT32:
-					return (double)(_buf.ReadInt32() & 0xFFFFFFFF);
+                case MatDataTypes.miUTF32:
+                    return (double)(_buf.ReadInt32() & 0xFFFFFFFF);
 				case MatDataTypes.miINT32:
 					return (double)_buf.ReadInt32();
 				case MatDataTypes.miSINGLE:
@@ -134,15 +143,17 @@ namespace csmatio.io
 			switch (_type)
 			{
 				case MatDataTypes.miUINT8:
-					return (byte)(_buf.ReadByte() & 0xff);
+                    return (byte)(_buf.ReadByte() & 0xff);
 				case MatDataTypes.miINT8:
 					return (byte)_buf.ReadByte();
 				case MatDataTypes.miUINT16:
-					return (byte)(_buf.ReadInt16() & 0xFFFF);
+                case MatDataTypes.miUTF16:
+                    return (byte)(_buf.ReadInt16() & 0xFFFF);
 				case MatDataTypes.miINT16:
 					return (byte)_buf.ReadInt16();
 				case MatDataTypes.miUINT32:
-					return (byte)(_buf.ReadInt32() & 0xFFFFFFFF);
+                case MatDataTypes.miUTF32:
+                    return (byte)(_buf.ReadInt32() & 0xFFFFFFFF);
 				case MatDataTypes.miINT32:
 					return (byte)_buf.ReadInt32();
 				case MatDataTypes.miSINGLE:
@@ -167,15 +178,18 @@ namespace csmatio.io
 			switch (_type)
 			{
 				case MatDataTypes.miUINT8:
-					return (long)(_buf.ReadByte() & 0xff);
+                case MatDataTypes.miUTF8:
+                    return (long)(_buf.ReadByte() & 0xff);
 				case MatDataTypes.miINT8:
 					return (long)_buf.ReadByte();
 				case MatDataTypes.miUINT16:
-					return (long)(_buf.ReadInt16() & 0xFFFF);
+                case MatDataTypes.miUTF16:
+                    return (long)(_buf.ReadInt16() & 0xFFFF);
 				case MatDataTypes.miINT16:
 					return (long)_buf.ReadInt16();
 				case MatDataTypes.miUINT32:
-					return (long)(_buf.ReadInt32() & 0xFFFFFFFF);
+                case MatDataTypes.miUTF32:
+                    return (long)(_buf.ReadInt32() & 0xFFFFFFFF);
 				case MatDataTypes.miINT32:
 					return (long)_buf.ReadInt32();
 				case MatDataTypes.miUINT64:
