@@ -1,12 +1,12 @@
 # CSMatIO #
 
 CSMatIO is a .NET Library to read, write, and manipulate Matlab binary MAT-files
-written by David Zier. He published his code on
+written by David Zier. He published his original code on
 [Matlab Central](http://www.mathworks.com/matlabcentral/fileexchange/16319)
 
-I found his work really useful. It had some bugs however, so I try to provide some fixes and enhancements here.
+As I found his work really useful I decided to provide some fixes, enhancements and support here on SF.
 
-CSMatIO uses ZLIB.NET (a managed version of the ZLIB library) to compress/decompress MAT-file content. ZLIB.NET is open source provided by ComponentAce (<http://www.componentace.com/>).
+CSMatIO uses ZLIB.NET (a managed version of the ZLIB library) to compress/decompress MAT-file content. ZLIB.NET is open source provided by ComponentAce (<http://www.componentace.com/>). Starting with CSMatIO revision 13 ZLIB.NET is not necessary anymore if you use .NET Framework 4.0 or higher.
 
 For license text see below.
 
@@ -39,6 +39,13 @@ David A. Zier
 ------------------------------------------------------------------------
 
 # CHANGE LOG #
+
+## r19, 2017-11-07 ##
+
+- added MLStructure.Keys property
+- removed version attribute from zlib reference 
+- CSMatIOTest.csproj: removed app.config reference 
+- BuildAllReleaseVersions.bat: add path to MSBuild.exe
 
 ## r14, 2016-09-22 ##
 
