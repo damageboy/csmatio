@@ -97,6 +97,14 @@ namespace csmatio.types
 		}
 
 		/// <summary>
+		/// Gets the field names
+		/// </summary>
+		public List<string> Keys
+		{
+			get { return _keys; }
+		}
+
+		/// <summary>
 		/// Gets the maximum length of field descriptor
 		/// </summary>
 		public int MaxFieldLength
