@@ -1,0 +1,33 @@
+image: Visual Studio 2017
+version: 4.0.0-{build}
+environment:
+  global:
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+clone_depth: 10
+before_build:
+  - appveyor-retry dotnet restore -v Minimal CSMatIO.sln
+build_script:
+  - dotnet build "test" -c Debug
+after_build:
+  - dotnet pack src\ -c Release
+test:
+  assemblies:
+    - test\bin\Debug\net471\test.dll
+    - test\bin\Debug\netcoreapp2.0\test.dll
+artifacts:
+  - path: 'src\**\*.nupkg'
+    name: Nuget
+deploy:
+#  - provider: Environment
+#    name: MyGet Unstable
+#    on:
+#      deploy_myget_unstable: true
+#  - provider: Environment
+#    name: MyGet Stable
+#    on:
+#      deploy_myget_stable: true
+#  - provider: Environment
+#    name: Npgsql Github
+#    on:
+#      deploy_github_release: true
