@@ -8,9 +8,10 @@ clone_depth: 10
 before_build:
   - appveyor-retry dotnet restore -v Minimal CSMatIO.sln
 build_script:
-  - dotnet build "test" -c Debug
+  - dotnet build "src" -c release
+  - dotnet build "test" -c debug
 after_build:
-  - dotnet pack src\ -c Release
+  - dotnet pack src\ -c release
 test:
   assemblies:
     - test\bin\Debug\net471\test.dll
