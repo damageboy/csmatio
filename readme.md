@@ -43,6 +43,14 @@ David A. Zier
 
 # CHANGE LOG #
 
+## r20, 2018-04-22 ##
+
+- support netstandard (net471 + netcoreapp2.0)
+- dropped support for .NET 2.0
+- Switched build to new csrpoj (dotnet-cli)
+- Added unit tests
+- Added appveyor build config
+
 ## r19, 2017-11-07 ##
 
 - added MLStructure.Keys property
