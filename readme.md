@@ -1,3 +1,6 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/1mcin7eb3vanbqv5/branch/master?svg=true)](https://ci.appveyor.com/project/damageboy/csmatio/branch/master)
+
+
 # CSMatIO #
 
 CSMatIO is a .NET Library to read, write, and manipulate Matlab binary MAT-files
