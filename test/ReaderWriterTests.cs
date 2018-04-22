@@ -175,7 +175,7 @@ namespace test
 
             foreach (var f in Directory.EnumerateFiles(dir, "*.mat"))
             {
-                var tcd = new TestCaseData(f) {TestName = Path.GetFileNameWithoutExtension(f)};
+                var tcd = new TestCaseData(f) {TestName = TestContext.CurrentContext.Test.MethodName + "." + Path.GetFileNameWithoutExtension(f)};
                 yield return tcd;
             }
         }
