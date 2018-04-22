@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace CSMatIOTest
 {
     partial class Main
@@ -5,7 +8,7 @@ namespace CSMatIOTest
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -326,30 +329,30 @@ namespace CSMatIOTest
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnRead;
-        private System.Windows.Forms.Button btnCreate;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox chkCompress;
-        private System.Windows.Forms.CheckBox chkUInt16;
-        private System.Windows.Forms.CheckBox chkInt16;
-        private System.Windows.Forms.CheckBox chkUInt8;
-        private System.Windows.Forms.CheckBox chkInt8;
-        private System.Windows.Forms.CheckBox chkSingle;
-        private System.Windows.Forms.CheckBox chkUInt64;
-        private System.Windows.Forms.CheckBox chkInt64;
-        private System.Windows.Forms.CheckBox chkUInt32;
-        private System.Windows.Forms.CheckBox chkInt32;
-        private System.Windows.Forms.CheckBox chkCell;
-        private System.Windows.Forms.CheckBox chkStruct;
-        private System.Windows.Forms.CheckBox chkChar;
-        private System.Windows.Forms.CheckBox chkDouble;
-        private System.Windows.Forms.CheckBox chkSparse;
-        private System.Windows.Forms.CheckBox chkImagMatrix;
-        private System.Windows.Forms.OpenFileDialog openFileDialog;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog;
-        private System.Windows.Forms.RichTextBox txtOutput;
-		private System.Windows.Forms.Button btnCheckEmAll;
+        private Label label1;
+        private Button btnRead;
+        private Button btnCreate;
+        private GroupBox groupBox1;
+        private CheckBox chkCompress;
+        private CheckBox chkUInt16;
+        private CheckBox chkInt16;
+        private CheckBox chkUInt8;
+        private CheckBox chkInt8;
+        private CheckBox chkSingle;
+        private CheckBox chkUInt64;
+        private CheckBox chkInt64;
+        private CheckBox chkUInt32;
+        private CheckBox chkInt32;
+        private CheckBox chkCell;
+        private CheckBox chkStruct;
+        private CheckBox chkChar;
+        private CheckBox chkDouble;
+        private CheckBox chkSparse;
+        private CheckBox chkImagMatrix;
+        private OpenFileDialog openFileDialog;
+        private SaveFileDialog saveFileDialog;
+        private RichTextBox txtOutput;
+		private Button btnCheckEmAll;
     }
 }
 

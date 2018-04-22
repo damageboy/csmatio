@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Text;
 
 namespace csmatio.types
 {
@@ -9,7 +10,7 @@ namespace csmatio.types
 	/// <author>David Zier (david.zier@gmail.com)</author>
 	public class MLCell : MLArray
 	{
-		private ArrayList _cells;
+		readonly ArrayList _cells;
 
 		/// <summary>
 		/// Create a basic empty <c>MLCell</c> object for a specific set of dimensions
@@ -17,7 +18,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="Dims">Array dimensions</param>
 		public MLCell( string Name, int[] Dims ) :
-			this( Name, Dims, MLArray.mxCELL_CLASS, 0 ) {}
+			this( Name, Dims, mxCELL_CLASS, 0 ) {}
 
 		/// <summary>
 		/// Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
@@ -31,7 +32,7 @@ namespace csmatio.types
 		{
 			_cells = new ArrayList(M*N);
 
-			for( int i = 0; i < M*N; i++ )
+			for( var i = 0; i < M*N; i++ )
 			{
 				_cells.Add( new MLEmptyArray() );
 			}
@@ -42,8 +43,8 @@ namespace csmatio.types
 		/// </summary>
 		public MLArray this[ int m, int n ]
 		{
-			set{ _cells[ GetIndex(m,n) ] = value; }
-			get{ return (MLArray)_cells[ GetIndex(m,n) ]; }
+			set => _cells[ GetIndex(m,n) ] = value;
+			get => (MLArray)_cells[ GetIndex(m,n) ];
 		}
 
 		/// <summary>
@@ -51,17 +52,14 @@ namespace csmatio.types
 		/// </summary>
 		public MLArray this[ int Index ]
 		{
-			set{ _cells[ Index ] = value; }
-			get{ return (MLArray)_cells[ Index ]; }
+			set => _cells[ Index ] = value;
+			get => (MLArray)_cells[ Index ];
 		}
 
 		/// <summary>
 		/// Public Get Accessor for the cells array list
 		/// </summary>
-		public ArrayList Cells
-		{
-			get{ return _cells; }
-		}
+		public ArrayList Cells => _cells;
 
 		/// <summary>
 		/// Get a string representation for the content of the array.
@@ -69,13 +67,13 @@ namespace csmatio.types
 		/// <returns>A string representation.</returns>
 		public override string ContentToString()
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			var sb = new StringBuilder();
 			sb.Append( Name + " = \n" );
 
-			for( int m = 0; m < M; m++ )
+			for( var m = 0; m < M; m++ )
 			{
 				sb.Append("\t");
-				for( int n = 0; n < N; n++ )
+				for( var n = 0; n < N; n++ )
 				{
 					sb.Append( this[m,n].ContentToString() );
 					sb.Append("\t");

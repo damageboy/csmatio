@@ -1,5 +1,3 @@
-using System;
-
 namespace csmatio.types
 {
 	/// <summary>
@@ -12,7 +10,7 @@ namespace csmatio.types
 		/// Create an basic empty array
 		/// </summary>
 		public MLEmptyArray() :
-			base( null, new int[] {0,0}, mxDOUBLE_CLASS, 0)
+			base( null, new[] {0,0}, mxDOUBLE_CLASS, 0)
 		{}
 
 		/// <summary>
@@ -20,7 +18,7 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="name">The name of the array</param>
 		public MLEmptyArray( string name ) :
-			base( name, new int[] {0,0}, mxDOUBLE_CLASS, 0)
+			base( name, new[] {0,0}, mxDOUBLE_CLASS, 0)
 		{
 		}
 

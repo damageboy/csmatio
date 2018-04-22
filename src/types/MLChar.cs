@@ -1,6 +1,5 @@
 using System;
-using csmatio.types;
-using csmatio.common;
+using System.Text;
 
 namespace csmatio.types
 {
@@ -10,7 +9,7 @@ namespace csmatio.types
 	/// <author>David Zier (david.zier@gmail.com)</author>
 	public class MLChar : MLArray, IGenericArrayCreator<char>
 	{
-		char[] _chars;
+		readonly char[] _chars;
 
 		/// <summary>
 		/// Creates an <c>MLChar</c> object from a character string.
@@ -18,7 +17,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="Val">A character string array</param>
 		public MLChar( string Name, string Val ) :
-			this( Name, new int[] { Val.Length == 0 ? 0 : 1, Val.Length } , MLArray.mxCHAR_CLASS, 0 )
+			this( Name, new[] { Val.Length == 0 ? 0 : 1, Val.Length } , mxCHAR_CLASS, 0 )
 		{
 			Set( Val );
 		}
@@ -72,8 +71,8 @@ namespace csmatio.types
 		/// <param name="Val">A character string</param>
 		public void Set( string Val )
 		{
-			char[] cha = Val.ToCharArray();
-			for( int i = 0; i < N && i < Val.Length; i++ )
+			var cha = Val.ToCharArray();
+			for( var i = 0; i < N && i < Val.Length; i++ )
 			{
 				SetChar(cha[i],i);
 			}
@@ -108,7 +107,7 @@ namespace csmatio.types
 		{
 			if( o.GetType() == typeof( MLChar ) )
 			{
-				return Array.Equals( _chars, ((MLChar)o)._chars );
+				return Equals( _chars, ((MLChar)o)._chars );
 			}
 			return base.Equals( o );
 		}
@@ -129,9 +128,9 @@ namespace csmatio.types
 		/// <returns><c>String</c></returns>
 		public string GetString( int m )
 		{
-			System.Text.StringBuilder charBuff = new System.Text.StringBuilder();
+			var charBuff = new StringBuilder();
 
-			for( int n = 0; n < N; n++ )
+			for( var n = 0; n < N; n++ )
 			{
 				charBuff.Append( GetChar( m, n ) );
 			}
@@ -145,15 +144,15 @@ namespace csmatio.types
 		/// <returns>A string representation.</returns>
 		public override string ContentToString()
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			var sb = new StringBuilder();
 			sb.Append( Name + " = \n" );
 
-			for( int m = 0; m < M; m++ )
+			for( var m = 0; m < M; m++ )
 			{
 				sb.Append("\t");
-				System.Text.StringBuilder charBuff = new System.Text.StringBuilder();
+				var charBuff = new StringBuilder();
 				charBuff.Append("'");
-				for( int n = 0; n < N; n++ )
+				for( var n = 0; n < N; n++ )
 					charBuff.Append( GetChar(m,n) );
 				charBuff.Append("'");
 				sb.Append( charBuff );

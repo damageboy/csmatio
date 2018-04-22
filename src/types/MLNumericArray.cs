@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
-using csmatio.types;
-using csmatio.common;
 using System.Runtime.InteropServices;
+using System.Text;
+using csmatio.common;
 
 namespace csmatio.types
 {
@@ -12,9 +11,9 @@ namespace csmatio.types
 	/// <author>David Zier (david.zier@gmail.com)</author>
 	public abstract class MLNumericArray<T> : MLArray, IGenericArrayCreator<T>, IByteStorageSupport
 	{
-		private ByteBuffer _real;
-		private ByteBuffer _imaginary;
-		private byte[] _bytes;
+		readonly ByteBuffer _real;
+		readonly ByteBuffer _imaginary;
+	  byte[] _bytes;
 
 		#region Contructors
 
@@ -43,10 +42,10 @@ namespace csmatio.types
 		/// <param name="Vals">One-dimensional array of doubles, packed by columns.</param>
 		/// <param name="M">The number of rows.</param>
 		protected MLNumericArray(string Name, int Type, T[] Vals, int M)
-			: this(Name, new int[] { M, Vals.Length / M }, Type, 0)
+			: this(Name, new[] { M, Vals.Length / M }, Type, 0)
 		{
 			// Fill in the array
-			for (int i = 0; i < Vals.Length; i++)
+			for (var i = 0; i < Vals.Length; i++)
 				Set(Vals[i], i);
 		}
 
@@ -62,14 +61,14 @@ namespace csmatio.types
 		/// packed by columns</param>
 		/// <param name="M">The number of columns</param>
 		protected MLNumericArray(string Name, int Type, T[] RealVals, T[] ImagVals, int M)
-			: this(Name, new int[] { M, RealVals.Length / M }, Type, MLArray.mtFLAG_COMPLEX)
+			: this(Name, new[] { M, RealVals.Length / M }, Type, mtFLAG_COMPLEX)
 		{
 			if (ImagVals.Length != RealVals.Length)
 				throw new ArgumentException("Attempting to create an imaginary numeric array where the " +
 					"imaginary array is _not_ the same size as the real array.");
 
 			// Fill in the imaginary array
-			for (int i = 0; i < ImagVals.Length; i++)
+			for (var i = 0; i < ImagVals.Length; i++)
 			{
 				SetReal(RealVals[i], i);
 				SetImaginary(ImagVals[i], i);
@@ -79,14 +78,8 @@ namespace csmatio.types
 		#endregion
 
 		/// <summary>Gets the flags for this array.</summary>
-		public override int Flags
-		{
-			get
-			{
-				return (int)((uint)(base._type & MLArray.mtFLAG_TYPE)
-					| (uint)(base._attributes & 0xFFFFFF00));
-			}
-		}
+		public override int Flags => (int)((uint)(_type & mtFLAG_TYPE)
+		                                   | (uint)(_attributes & 0xFFFFFF00));
 
 		/// <summary>
 		/// Gets a single real array element of A(m,n).
@@ -205,8 +198,7 @@ namespace csmatio.types
 		{
 			if (IsComplex)
 				return _imaginary;
-			else
-				return null;
+			return null;
 		}
 
 		/// <summary>
@@ -269,7 +261,7 @@ namespace csmatio.types
 		//    SetReal( Vector );
 		//}
 
-		private int _GetByteOffset(int Index)
+	  int _GetByteOffset(int Index)
 		{
 			return Index * GetBytesAllocated;
 		}
@@ -305,11 +297,11 @@ namespace csmatio.types
 		/// <returns>2D array.</returns>
 		public T[][] GetArray()
 		{
-			T[][] result = new T[M][];
-			for (int m = 0; m < M; m++)
+			var result = new T[M][];
+			for (var m = 0; m < M; m++)
 			{
 				result[m] = new T[N];
-				for (int n = 0; n < N; n++)
+				for (var n = 0; n < N; n++)
 				{
 					result[m][n] = GetReal(m, n);
 				}
@@ -323,7 +315,7 @@ namespace csmatio.types
 		/// </summary>
 		public ByteBuffer ImaginaryByteBuffer
 		{
-			get { return _imaginary; }
+			get => _imaginary;
 			set
 			{
 				if (!IsComplex)
@@ -339,7 +331,7 @@ namespace csmatio.types
 		/// </summary>
 		public ByteBuffer RealByteBuffer
 		{
-			get { return _real; }
+			get => _real;
 			set
 			{
 				_real.Rewind();
@@ -354,19 +346,19 @@ namespace csmatio.types
 		/// <returns>A string representation.</returns>
 		public override string ContentToString()
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			var sb = new StringBuilder();
 			sb.Append(Name + " = \n");
 
 			if (Size > 1000)
 			{
 				// sb.Append("Cannot display variables with more than 1000 elements.");
-				sb.Append(this.ToString());
+				sb.Append(ToString());
 				return sb.ToString();
 			}
-			for (int m = 0; m < M; m++)
+			for (var m = 0; m < M; m++)
 			{
 				sb.Append("\t");
-				for (int n = 0; n < N; n++)
+				for (var n = 0; n < N; n++)
 				{
 					sb.Append(GetReal(m, n));
 					if (IsComplex)
@@ -387,8 +379,8 @@ namespace csmatio.types
 		{
 			if (o.GetType() == typeof(MLNumericArray<T>))
 			{
-				bool result = DirectByteBufferEquals(_real, ((MLNumericArray<T>)o).GetReal()) &&
-					Array.Equals(Dimensions, ((MLNumericArray<T>)o).Dimensions);
+				var result = DirectByteBufferEquals(_real, ((MLNumericArray<T>)o).GetReal()) &&
+					Equals(Dimensions, ((MLNumericArray<T>)o).Dimensions);
 
 				if (IsComplex && result)
 					result &= DirectByteBufferEquals(_imaginary, ((MLNumericArray<T>)o).GetImaginary());
@@ -413,7 +405,7 @@ namespace csmatio.types
 		/// <param name="buffa">The source buffer to be compared.</param>
 		/// <param name="buffb">The destination buffer to be compared.</param>
 		/// <returns><c>true</c> if buffers are equal in terms of content.</returns>
-		private static bool DirectByteBufferEquals(ByteBuffer buffa, ByteBuffer buffb)
+		static bool DirectByteBufferEquals(ByteBuffer buffa, ByteBuffer buffb)
 		{
 			if (buffa == buffb)
 				return true;
@@ -424,12 +416,12 @@ namespace csmatio.types
 			buffa.Rewind();
 			buffb.Rewind();
 
-			int length = buffa.Remaining;
+			var length = buffa.Remaining;
 
 			if (buffb.Remaining != length)
 				return false;
 
-			for (int i = 0; i < length; i++)
+			for (var i = 0; i < length; i++)
 				if (buffa.Get() != buffb.Get())
 					return false;
 
@@ -462,7 +454,7 @@ namespace csmatio.types
 			get
 			{
 				int retval;
-				Type tt = typeof(T);
+				var tt = typeof(T);
 				if (tt.IsValueType)
 				{
 					retval = Marshal.SizeOf(tt);
@@ -504,10 +496,7 @@ namespace csmatio.types
 		/// <summary>
 		/// Gets the type of numeric object that this byte storage represents
 		/// </summary>
-		public virtual Type GetStorageType
-		{
-			get { return typeof(T); }
-		}
+		public virtual Type GetStorageType => typeof(T);
 
 		/// <summary>
 		/// Builds a numeric object from a byte array.

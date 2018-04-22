@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace csmatio.types
 {
@@ -95,13 +96,10 @@ namespace csmatio.types
 		}
 
 		/// <summary>Gets the name of the array.</summary>
-		public string Name{ get{ return _name; } }
+		public string Name => _name;
 
 		/// <summary>Gets the flags for this array.</summary>
-		public virtual int Flags
-        { 
-            get{ return (int)((uint)(_type & mtFLAG_TYPE) | (uint)(_attributes & 0xFFFFFF00)); } 
-        }
+		public virtual int Flags => (int)((uint)(_type & mtFLAG_TYPE) | (uint)(_attributes & 0xFFFFFF00));
 
 		/// <summary>
 		/// Converts the name string into a byte array and returns it.
@@ -109,8 +107,8 @@ namespace csmatio.types
 		/// <returns>A byte array.</returns>
 		public byte[] GetNameToByteArray()
 		{
-			byte[] bs = new byte[ _name.Length ];
-			for( int i = 0; i < _name.Length; i++ )
+			var bs = new byte[ _name.Length ];
+			for( var i = 0; i < _name.Length; i++ )
 				bs[i] = (byte)_name[i];
 			return bs;
 		}
@@ -133,20 +131,20 @@ namespace csmatio.types
 		}
 
 		/// <summary>Get the M dimension.</summary>
-		public int M{ get{ return( (_dims != null) ? _dims[0] : 0 ); } }
+		public int M => ( (_dims != null) ? _dims[0] : 0 );
 
 		/// <summary>Get the N dimension.</summary>
 		public int N
 		{ 
 			get
 			{
-				int i = 0;
+				var i = 0;
 				if( _dims != null )
 				{
 					if( _dims.Length > 2 )
 					{
 						i = 1;
-						for( int j = 1; j < _dims.Length; j++ )
+						for( var j = 1; j < _dims.Length; j++ )
 							i *= _dims[j];
 					}
 					else
@@ -159,22 +157,22 @@ namespace csmatio.types
 		/// <summary>
 		/// Get the N dimensions or the size of the dimensions array
 		/// </summary>
-		public int NDimensions{ get{ return( (_dims != null) ? _dims.Length : 0 ); } }
-		
+		public int NDimensions => ( (_dims != null) ? _dims.Length : 0 );
+
 		/// <summary>
 		/// Get the size of the array.
 		/// </summary>
-		public int Size{ get{ return M * N; } }
+		public int Size => M * N;
 
 		/// <summary>
 		/// Get the Matlab Array Type for this array
 		/// </summary>
-		public int Type{ get{ return _type; } }
+		public int Type => _type;
 
 		/// <summary>
 		/// Is the array empty?
 		/// </summary>
-		public bool IsEmpty{ get{ return N == 0; } }
+		public bool IsEmpty => N == 0;
 
 		/// <summary>
 		/// Converts a Matlab Array Class type into a string representation.
@@ -227,64 +225,64 @@ namespace csmatio.types
 		}
 
 		/// <summary>Is Array a Cell Class Type?</summary>
-		public bool IsCell{ get{ return _type == mxCELL_CLASS; } }
+		public bool IsCell => _type == mxCELL_CLASS;
 
 		/// <summary>Is Array a Char Class Type?</summary>
-		public bool IsChar{ get{ return _type == mxCHAR_CLASS; } }
+		public bool IsChar => _type == mxCHAR_CLASS;
 
 		/// <summary>Is Array a Complex Number?</summary>
-		public bool IsComplex{ get{ return (_attributes & mtFLAG_COMPLEX) != 0; } }
-		
+		public bool IsComplex => (_attributes & mtFLAG_COMPLEX) != 0;
+
 		/// <summary>Is Array a Sparse Array Class Type?</summary>
-		public bool IsSparse{ get{ return _type == mxSPARSE_CLASS; } }
+		public bool IsSparse => _type == mxSPARSE_CLASS;
 
 		/// <summary>Is Array a Struct Type?</summary>
-		public bool IsStruct{ get{ return _type == mxSTRUCT_CLASS; } }
+		public bool IsStruct => _type == mxSTRUCT_CLASS;
 
 		/// <summary>Is Array a Double Precision Type?</summary>
-		public bool IsDouble{ get{ return _type == mxDOUBLE_CLASS; } }
+		public bool IsDouble => _type == mxDOUBLE_CLASS;
 
 		/// <summary>Is Array a Single Precision Type?</summary>
-		public bool IsSingle{ get{ return _type == mxSINGLE_CLASS; } }
+		public bool IsSingle => _type == mxSINGLE_CLASS;
 
 		/// <summary>Is Array a 8-bit Signed Integer Type?</summary>
-		public bool IsInt8{ get{ return _type == mxINT8_CLASS; } }
+		public bool IsInt8 => _type == mxINT8_CLASS;
 
 		/// <summary>Is Array a 16-bit Signed Integer Type?</summary>
-		public bool IsInt16{ get{ return _type == mxINT16_CLASS; } }
+		public bool IsInt16 => _type == mxINT16_CLASS;
 
 		/// <summary>Is Array a 32-bit Signed Integer Type?</summary>
-		public bool IsInt32{ get{ return _type == mxINT32_CLASS; } }
+		public bool IsInt32 => _type == mxINT32_CLASS;
 
 		/// <summary>Is Array a 8-bit Unsigned Integer Type?</summary>
-		public bool IsUInt8{ get{ return _type == mxUINT8_CLASS; } }
+		public bool IsUInt8 => _type == mxUINT8_CLASS;
 
 		/// <summary>Is Array a 16-bit Unsigned Integer Type?</summary>
-		public bool IsUInt16{ get{ return _type == mxUINT16_CLASS; } }
+		public bool IsUInt16 => _type == mxUINT16_CLASS;
 
 		/// <summary>Is Array a 32-bit Unsigned Integer Type?</summary>
-		public bool IsUInt32{ get{ return _type == mxUINT32_CLASS; } }
+		public bool IsUInt32 => _type == mxUINT32_CLASS;
 
 		/// <summary>Is Array a 64-bit Signed Integer Type?</summary>
-		public bool IsInt64{ get{ return _type == mxINT64_CLASS; } }
+		public bool IsInt64 => _type == mxINT64_CLASS;
 
 		/// <summary>Is Array a 64-bit Unsigned Integer Type?</summary>
-		public bool IsUInt64{ get{ return _type == mxUINT64_CLASS; } }
+		public bool IsUInt64 => _type == mxUINT64_CLASS;
 
 		/// <summary>Is Array an Object Type?</summary>
-		public bool IsObject{ get{ return _type == mxOBJECT_CLASS; } }
+		public bool IsObject => _type == mxOBJECT_CLASS;
 
 		/// <summary>Is Array an Opaque Type?</summary>
-		public bool IsOpaque{ get{ return _type == mxOPAQUE_CLASS; } }
+		public bool IsOpaque => _type == mxOPAQUE_CLASS;
 
 		/// <summary>Is Array a logical value?</summary>
-		public bool IsLogical{ get{ return (_attributes & mtFLAG_LOGICAL) != 0; } }
+		public bool IsLogical => (_attributes & mtFLAG_LOGICAL) != 0;
 
 		/// <summary>Is Array a Function Object?</summary>
-		public bool IsFunctionObject{ get{ return _type == mxFUNCTION_CLASS; } }
+		public bool IsFunctionObject => _type == mxFUNCTION_CLASS;
 
 		/// <summary>Is Array an Unknown Type?</summary>
-		public bool IsUnknown{ get{ return _type == mxUNKNOWN_CLASS; } }
+		public bool IsUnknown => _type == mxUNKNOWN_CLASS;
 
 		/// <summary>
 		/// Get the index into the byte array.
@@ -303,7 +301,7 @@ namespace csmatio.types
 		/// <returns>A string representation.</returns>
 		public override string ToString()
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			var sb = new StringBuilder();
 			if( _dims != null )
 			{
 				sb.Append("[");

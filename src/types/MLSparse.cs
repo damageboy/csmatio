@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace csmatio.types
 {
@@ -9,19 +10,19 @@ namespace csmatio.types
 	/// <author>David Zier (david.zier@gmail.com)</author>
 	public class MLSparse : MLNumericArray<double>
 	{
-		private int _nzMax;
-		private List<IndexMN> _indexSet;
-		private Dictionary<IndexMN, double> _real;
-		private Dictionary<IndexMN, double> _imaginary;
+		readonly int _nzMax;
+		readonly List<IndexMN> _indexSet;
+		readonly Dictionary<IndexMN, double> _real;
+		readonly Dictionary<IndexMN, double> _imaginary;
 
 		/// <summary>
 		/// Matrix index (m,n)
 		/// </summary>
 		/// <author>David Zier (david.zier@gmail.com)</author>
-		private class IndexMN
+		class IndexMN
 		{
-			private int _m;
-			private int _n;
+		  int _m;
+		  int _n;
 
 			/// <summary>
 			/// Construct a basic <c>IndexMN</c> object from
@@ -40,8 +41,8 @@ namespace csmatio.types
 			/// </summary>
 			public int M
 			{
-				get { return _m; }
-				set { _m = value; }
+				get => _m;
+				set => _m = value;
 			}
 
 			/// <summary>
@@ -49,8 +50,8 @@ namespace csmatio.types
 			/// </summary>
 			public int N
 			{
-				get { return _n; }
-				set { _n = value; }
+				get => _n;
+				set => _n = value;
 			}
 
 			/// <summary>
@@ -59,8 +60,8 @@ namespace csmatio.types
 			/// <returns>A hashcode for this object</returns>
 			public override int GetHashCode()
 			{
-				long l = (long)_m;
-				l ^= (long)_n * 31L;
+				var l = (long)_m;
+				l ^= _n * 31L;
 				return (int)l ^ (int)(l >> 32);
 			}
 
@@ -98,7 +99,7 @@ namespace csmatio.types
 		/// <param name="Attributes">Array flags</param>
 		/// <param name="nzMax">Maximum number of non-zero numbers</param>
 		public MLSparse(string Name, int[] Dims, int Attributes, int nzMax)
-			: base(Name, Dims, MLArray.mxSPARSE_CLASS, Attributes)
+			: base(Name, Dims, mxSPARSE_CLASS, Attributes)
 		{
 			_nzMax = nzMax;
 			_real = new Dictionary<IndexMN, double>();
@@ -111,10 +112,7 @@ namespace csmatio.types
 		/// <summary>
 		/// Gets the maximum number of non-zero values.
 		/// </summary>
-		public int MaxNZ
-		{
-			get { return _nzMax; }
-		}
+		public int MaxNZ => _nzMax;
 
 		/// <summary>
 		/// Gets row indices
@@ -125,9 +123,9 @@ namespace csmatio.types
 		{
 			get
 			{
-				int[] ir = new int[_nzMax];
-				int i = 0;
-				foreach (IndexMN index in _indexSet)
+				var ir = new int[_nzMax];
+				var i = 0;
+				foreach (var index in _indexSet)
 				{
 					ir[i++] = index.M;
 				}
@@ -150,19 +148,19 @@ namespace csmatio.types
 		{
 			get
 			{
-				int[] jc = new int[N + 1];
+				var jc = new int[N + 1];
 
 				// Create tmp array of nnz column indices
-				int[] tmp = new int[_nzMax];
-				int i = 0;
-				foreach (IndexMN index in _indexSet)
+				var tmp = new int[_nzMax];
+				var i = 0;
+				foreach (var index in _indexSet)
 				{
 					tmp[i++] = index.N;
 				}
 
 				// Create JC
-				int c = 0;
-				for (int k = 0; k < jc.Length - 1; k++)
+				var c = 0;
+				for (var k = 0; k < jc.Length - 1; k++)
 				{
 					if (k < tmp.Length)
 						c = tmp[k];
@@ -195,10 +193,10 @@ namespace csmatio.types
 		/// <returns>Array Element</returns>
 		public override double GetReal(int M, int N)
 		{
-			IndexMN i = new IndexMN(M, N);
+			var i = new IndexMN(M, N);
 			if (_real.ContainsKey(i))
 				return _real[i];
-			return (double)0;
+			return 0;
 		}
 
 		/// <summary>
@@ -222,7 +220,7 @@ namespace csmatio.types
 		/// <param name="N">The column index.</param>
 		public override void SetReal(double Val, int M, int N)
 		{
-			IndexMN i = new IndexMN(M, N);
+			var i = new IndexMN(M, N);
 			if (!_indexSet.Contains(i))
 				_indexSet.Add(i);
 			_real.Add(i, Val);
@@ -251,11 +249,11 @@ namespace csmatio.types
 		{
 			if (IsComplex)
 			{
-				IndexMN i = new IndexMN(M, N);
+				var i = new IndexMN(M, N);
 				if (_imaginary.ContainsKey(i))
 					return _imaginary[i];
 			}
-			return (double)0;
+			return 0;
 		}
 
 		/// <summary>
@@ -281,10 +279,10 @@ namespace csmatio.types
 		{
 			if (IsComplex)
 			{
-				IndexMN i = new IndexMN(M, N);
+				var i = new IndexMN(M, N);
 				if (!_indexSet.Contains(i))
 					_indexSet.Add(i);
-				_imaginary.Add(i, (double)Val);
+				_imaginary.Add(i, Val);
 			}
 		}
 
@@ -307,9 +305,9 @@ namespace csmatio.types
 		/// <returns><c>System.Double</c> array</returns>
 		public double[] ExportReal()
 		{
-			double[] ad = new double[_nzMax];
-			int i = 0;
-			foreach (double d in _real.Values)
+			var ad = new double[_nzMax];
+			var i = 0;
+			foreach (var d in _real.Values)
 				ad[i++] = d;
 			return ad;
 		}
@@ -320,22 +318,16 @@ namespace csmatio.types
 		/// <returns><c>System.Double</c> array</returns>
 		public double[] ExportImaginary()
 		{
-			double[] ad = new double[_nzMax];
-			int i = 0;
-			foreach (double d in _imaginary.Values)
+			var ad = new double[_nzMax];
+			var i = 0;
+			foreach (var d in _imaginary.Values)
 				ad[i++] = d;
 			return ad;
 		}
 
 		/// <summary>Gets the flags for this array.</summary>
-		public override int Flags
-		{
-			get
-			{
-				return (int)((uint)(_type & MLArray.mtFLAG_TYPE)
-					| (uint)(base._attributes & 0xFFFFFF00));
-			}
-		}
+		public override int Flags => (int)((uint)(_type & mtFLAG_TYPE)
+		                                   | (uint)(_attributes & 0xFFFFFF00));
 
 
 		/// <summary>
@@ -345,10 +337,10 @@ namespace csmatio.types
 		/// <returns>A string representation.</returns>
 		public override string ContentToString()
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			var sb = new StringBuilder();
 			sb.Append(Name + " = \n");
 
-			foreach (IndexMN i in _indexSet)
+			foreach (var i in _indexSet)
 			{
 				sb.Append("\t(" + i.M + "," + i.N + ")");
 				sb.Append("\t" + GetReal(i.M, i.N));

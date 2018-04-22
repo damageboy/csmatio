@@ -8,7 +8,7 @@ namespace csmatio.types
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Davids original comment: 
+	/// Davids original comment:
 	/// For some reason, Matlab sees the <c>mxUINT64</c> class as an array of
 	/// doubles, so in order to get this to work, <c>MLUInt64</c> actually converts
 	/// all of the ulong data to doubles.
@@ -38,7 +38,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="Dims">Array dimensions</param>
 		public MLUInt64(string Name, int[] Dims)
-			: base(Name, Dims, MLArray.mxUINT64_CLASS, 0) { }
+			: base(Name, Dims, mxUINT64_CLASS, 0) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -48,7 +48,7 @@ namespace csmatio.types
 		/// <param name="vals">One-dimensional array of <c>ulong</c>, packed by columns</param>
 		/// <param name="m">Number of rows</param>
 		public MLUInt64(string Name, ulong[] vals, int m)
-			: base(Name, MLArray.mxUINT64_CLASS, vals, m) { }
+			: base(Name, mxUINT64_CLASS, vals, m) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -57,7 +57,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="vals">Two-dimensional array of values</param>
 		public MLUInt64(string Name, ulong[][] vals)
-			: this(Name, Helpers.Array2DTo1D<ulong>(vals), vals.Length) { }
+			: this(Name, Helpers.Array2DTo1D(vals), vals.Length) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -68,7 +68,7 @@ namespace csmatio.types
 		/// <param name="Imag">One-dimensional array of <c>ulong</c> for <i>imaginary</i> values, packed by columns</param>
 		/// <param name="M">Number of rows</param>
 		public MLUInt64(string Name, ulong[] Real, ulong[] Imag, int M)
-			: base(Name, MLArray.mxUINT64_CLASS, Real, Imag, M) { }
+			: base(Name, mxUINT64_CLASS, Real, Imag, M) { }
 
 
 		/// <summary>
@@ -79,7 +79,7 @@ namespace csmatio.types
 		/// <param name="Real">One-dimensional array of <c>ulong</c> for <i>real</i> values, packed by columns</param>
 		/// <param name="Imag">One-dimensional array of <c>ulong</c> for <i>imaginary</i> values, packed by columns</param>
 		public MLUInt64(string Name, ulong[][] Real, ulong[][] Imag)
-			: this(Name, Helpers.Array2DTo1D<ulong>(Real), Helpers.Array2DTo1D<ulong>(Imag), Real.Length) { }
+			: this(Name, Helpers.Array2DTo1D(Real), Helpers.Array2DTo1D(Imag), Real.Length) { }
 
 		#endregion
 
@@ -88,18 +88,12 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="bytes">A byte array containing the data.</param>
 		/// <returns>A numeric object</returns>
-		protected override object BuildFromBytes2(byte[] bytes)
-		{
-			return BitConverter.ToUInt64(bytes, 0);
-		}
+		protected override object BuildFromBytes2(byte[] bytes) => BitConverter.ToUInt64(bytes, 0);
 
 		/// <summary>
 		/// Gets a byte array from a numeric object.
 		/// </summary>
 		/// <param name="val">The numeric object to convert into a byte array.</param>
-		public override byte[] GetByteArray(object val)
-		{
-			return BitConverter.GetBytes((ulong)val);
-		}
+		public override byte[] GetByteArray(object val) => BitConverter.GetBytes((ulong)val);
 	}
 }

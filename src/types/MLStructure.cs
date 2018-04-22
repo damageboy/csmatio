@@ -1,7 +1,7 @@
 using System;
-using System.IO;
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace csmatio.types
 {
@@ -17,17 +17,17 @@ namespace csmatio.types
 		/// <summary>
 		/// A Hashtable that keeps structure field names
 		/// </summary>
-		private List<string> _keys;
+		readonly List<string> _keys;
 
 		/// <summary>
 		/// Array of structures
 		/// </summary>
-		private List<Dictionary<string,MLArray>> _mlStructArray;
+		readonly List<Dictionary<string,MLArray>> _mlStructArray;
 
 		/// <summary>
 		/// Current structure pointer for bulk insert
 		/// </summary>
-		private int _currentIndex = 0;
+		int _currentIndex;
 
 		/// <summary>
 		/// Create an <c>MLStructure</c> class object.
@@ -35,7 +35,7 @@ namespace csmatio.types
 		/// <param name="Name">The name of the <c>MLStructure</c></param>
 		/// <param name="Dims">The array dimensions of the <c>MLStructure</c></param>
 		public MLStructure( string Name, int[] Dims ) :
-			this( Name, Dims, MLArray.mxSTRUCT_CLASS, 0 ){}
+			this( Name, Dims, mxSTRUCT_CLASS, 0 ){}
 
 		/// <summary>
 		/// Create a new <c>MLStructure</c> class object.
@@ -56,8 +56,8 @@ namespace csmatio.types
 		/// </summary>
 		public MLArray this[ string Name ]
 		{
-			set{ this[Name, _currentIndex ] = value; }
-			get{ return this[Name, _currentIndex]; }
+			set => this[Name, _currentIndex ] = value;
+			get => this[Name, _currentIndex];
 		}
 
 		/// <summary>
@@ -66,8 +66,8 @@ namespace csmatio.types
 		/// </summary>
 		public MLArray this[ string Name, int M, int N ]
 		{
-			set{ this[Name, GetIndex( M, N ) ] = value; }
-			get{ return this[ Name, GetIndex( M, N ) ]; }
+			set => this[Name, GetIndex( M, N ) ] = value;
+			get => this[ Name, GetIndex( M, N ) ];
 		}
 
 		/// <summary>
@@ -90,19 +90,13 @@ namespace csmatio.types
 				}
 				_mlStructArray[Index].Add(Name,value);
 			}
-			get
-			{
-				return _mlStructArray[Index][Name];
-			}
+			get => _mlStructArray[Index][Name];
 		}
 
 		/// <summary>
 		/// Gets the field names
 		/// </summary>
-		public List<string> Keys
-		{
-			get { return _keys; }
-		}
+		public List<string> Keys => _keys;
 
 		/// <summary>
 		/// Gets the maximum length of field descriptor
@@ -111,8 +105,8 @@ namespace csmatio.types
 		{
 			get
 			{
-				int maxLen = 0;
-				foreach( string s in _keys )
+				var maxLen = 0;
+				foreach( var s in _keys )
 				{
 					maxLen = s.Length > maxLen ? s.Length : maxLen;
 				}
@@ -126,20 +120,20 @@ namespace csmatio.types
 		/// <returns>A <c>byte</c> array for all the field names</returns>
 		public byte[] GetKeySetToByteArray()
 		{
-			MemoryStream memstrm = new MemoryStream();
-			BinaryWriter bw = new BinaryWriter(memstrm);
-			char[] buffer = new char[ MaxFieldLength ];
+			var memstrm = new MemoryStream();
+			var bw = new BinaryWriter(memstrm);
+			var buffer = new char[ MaxFieldLength ];
 
 			try
 			{
-				foreach( string s in _keys )
+				foreach( var s in _keys )
 				{
-					for( int i = 0; i < buffer.Length; i++ ) buffer[i] = (char)0;
+					for( var i = 0; i < buffer.Length; i++ ) buffer[i] = (char)0;
 					Array.Copy( s.ToCharArray(), 0, buffer, 0, s.Length );
 					bw.Write( buffer );
 				}
 			}
-			catch( System.IO.IOException e )
+			catch( IOException e )
 			{
 				Console.WriteLine("Could not write Structure key set to byte array: " + e );
 				return new byte[0];
@@ -155,9 +149,9 @@ namespace csmatio.types
 		{
 			get
 			{
-				List<MLArray> fields = new List<MLArray>();
+				var fields = new List<MLArray>();
 
-				foreach( Dictionary<string,MLArray> st in _mlStructArray )
+				foreach( var st in _mlStructArray )
 					fields.AddRange( st.Values );
 
 				return fields;
@@ -171,12 +165,12 @@ namespace csmatio.types
 		/// <returns>A string representation.</returns>
 		public override string ContentToString()
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			var sb = new StringBuilder();
 			sb.Append( Name + " = \n" );
 
 			if( M*N == 1 )
 			{
-				foreach( string key in _keys )
+				foreach( var key in _keys )
 				{
 					sb.Append("\t" + key + " : " + this[key].ContentToString() + "\n" );
 				}
@@ -186,7 +180,7 @@ namespace csmatio.types
 				sb.Append("\n");
 				sb.Append( M + "x" + N );
 				sb.Append(" struct array with fields: \n");
-				foreach( string key in _keys )
+				foreach( var key in _keys )
 				{
 					sb.Append("\t" + key + "\n");
 				}

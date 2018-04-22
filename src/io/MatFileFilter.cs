@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 
 namespace csmatio.io
@@ -17,7 +16,7 @@ namespace csmatio.io
 	/// MatFileFilter filter = new MatFileFilter();
 	/// // add a needle
 	/// filter.AddArrayName( "your_array_name" );
-	/// 
+	///
 	/// // Read array from file (haystack) looking _only_ for a specific array (needle)
 	/// MatFileReader mfr = new MatFileReader( fileName, filter );
 	/// </code>
@@ -25,11 +24,11 @@ namespace csmatio.io
 	/// <author>David Zier (david.zier@gmail.com)</author>
 	public class MatFileFilter
 	{
-		private ArrayList _filter;
+		readonly ArrayList _filter;
 
 		/// <summary>
 		/// Creates an empty filter instance.
-		/// 
+		///
 		/// <i>Note: Empty filter accepts all results.</i>
 		/// </summary>
 		public MatFileFilter()
@@ -44,7 +43,7 @@ namespace csmatio.io
 		public MatFileFilter( string[] Names ) :
 			this()
 		{
-			foreach( string name in Names )
+			foreach( var name in Names )
 			{
 				AddArrayName( name );
 			}

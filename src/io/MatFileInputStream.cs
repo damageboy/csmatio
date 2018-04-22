@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-
 using csmatio.common;
 using csmatio.types;
 
@@ -12,8 +11,8 @@ namespace csmatio.io
 	/// <author>David Zier (david.zier@gmail.com)</author>
 	public class MatFileInputStream
 	{
-		private int _type;
-		private BinaryReader _buf;
+		readonly int _type;
+		readonly BinaryReader _buf;
 
 		/// <summary>
 		/// Attach MAT-file input stream to <c>ByteBuffer</c>
@@ -38,19 +37,19 @@ namespace csmatio.io
 			{
 				case MatDataTypes.miUINT8:
                 case MatDataTypes.miUTF8:
-                    return (int)(_buf.ReadByte() & 0xff);
+                    return _buf.ReadByte() & 0xff;
 				case MatDataTypes.miINT8:
-					return (int)_buf.ReadByte();
+					return _buf.ReadByte();
 				case MatDataTypes.miUINT16:
                 case MatDataTypes.miUTF16:
-					return (int)(_buf.ReadInt16() & 0xFFFF);
+					return _buf.ReadInt16() & 0xFFFF;
 				case MatDataTypes.miINT16:
-					return (int)_buf.ReadInt16();
+					return _buf.ReadInt16();
 				case MatDataTypes.miUINT32:
                 case MatDataTypes.miUTF32:
                     return (int)(_buf.ReadInt32() & 0xFFFFFFFF);
 				case MatDataTypes.miINT32:
-					return (int)_buf.ReadInt32();
+					return _buf.ReadInt32();
 				case MatDataTypes.miUINT64:
 					return (int)_buf.ReadInt64();
 				case MatDataTypes.miINT64:
@@ -110,23 +109,23 @@ namespace csmatio.io
 			{
 				case MatDataTypes.miUINT8:
                 case MatDataTypes.miUTF8:
-                    return (double)(_buf.ReadByte() & 0xff);
+                    return _buf.ReadByte() & 0xff;
 				case MatDataTypes.miINT8:
-					return (double)_buf.ReadByte();
+					return _buf.ReadByte();
 				case MatDataTypes.miUINT16:
                 case MatDataTypes.miUTF16:
-                    return (double)(_buf.ReadInt16() & 0xFFFF);
+                    return _buf.ReadInt16() & 0xFFFF;
 				case MatDataTypes.miINT16:
-					return (double)_buf.ReadInt16();
+					return _buf.ReadInt16();
 				case MatDataTypes.miUINT32:
                 case MatDataTypes.miUTF32:
-                    return (double)(_buf.ReadInt32() & 0xFFFFFFFF);
+                    return _buf.ReadInt32() & 0xFFFFFFFF;
 				case MatDataTypes.miINT32:
-					return (double)_buf.ReadInt32();
+					return _buf.ReadInt32();
 				case MatDataTypes.miSINGLE:
-					return (double)_buf.ReadSingle();
+					return _buf.ReadSingle();
 				case MatDataTypes.miDOUBLE:
-					return (double)_buf.ReadDouble();
+					return _buf.ReadDouble();
 				default:
 					throw new ArgumentException("Unknown data type: " + _type);
 			}
@@ -145,7 +144,7 @@ namespace csmatio.io
 				case MatDataTypes.miUINT8:
                     return (byte)(_buf.ReadByte() & 0xff);
 				case MatDataTypes.miINT8:
-					return (byte)_buf.ReadByte();
+					return _buf.ReadByte();
 				case MatDataTypes.miUINT16:
                 case MatDataTypes.miUTF16:
                     return (byte)(_buf.ReadInt16() & 0xFFFF);
@@ -161,7 +160,7 @@ namespace csmatio.io
 				case MatDataTypes.miDOUBLE:
 					return (byte)_buf.ReadDouble();
 				case MatDataTypes.miUTF8:
-					return (byte)_buf.ReadByte();
+					return _buf.ReadByte();
 				default:
 					throw new ArgumentException("Unknown data type: " + _type);
 			}
@@ -179,23 +178,23 @@ namespace csmatio.io
 			{
 				case MatDataTypes.miUINT8:
                 case MatDataTypes.miUTF8:
-                    return (long)(_buf.ReadByte() & 0xff);
+                    return _buf.ReadByte() & 0xff;
 				case MatDataTypes.miINT8:
-					return (long)_buf.ReadByte();
+					return _buf.ReadByte();
 				case MatDataTypes.miUINT16:
                 case MatDataTypes.miUTF16:
-                    return (long)(_buf.ReadInt16() & 0xFFFF);
+                    return _buf.ReadInt16() & 0xFFFF;
 				case MatDataTypes.miINT16:
-					return (long)_buf.ReadInt16();
+					return _buf.ReadInt16();
 				case MatDataTypes.miUINT32:
                 case MatDataTypes.miUTF32:
-                    return (long)(_buf.ReadInt32() & 0xFFFFFFFF);
+                    return _buf.ReadInt32() & 0xFFFFFFFF;
 				case MatDataTypes.miINT32:
-					return (long)_buf.ReadInt32();
+					return _buf.ReadInt32();
 				case MatDataTypes.miUINT64:
-					return (long)_buf.ReadInt64();
+					return _buf.ReadInt64();
 				case MatDataTypes.miINT64:
-					return (long)_buf.ReadInt64();
+					return _buf.ReadInt64();
 				case MatDataTypes.miSINGLE:
 					return (long)_buf.ReadSingle();
 				case MatDataTypes.miDOUBLE:
@@ -218,21 +217,21 @@ namespace csmatio.io
 		public ByteBuffer ReadToByteBuffer(ByteBuffer dest, int elements,
 			IByteStorageSupport storage)
 		{
-			int bytesAllocated = storage.GetBytesAllocated;
-			int size = elements * bytesAllocated;
+			var bytesAllocated = storage.GetBytesAllocated;
+			var size = elements * bytesAllocated;
 
 			// direct buffer copy
 			if (MatDataTypes.SizeOf(_type) == bytesAllocated)
 			{
-				int bufMaxSize = 1024;
-				int bufSize = Math.Min((int)(_buf.BaseStream.Length - _buf.BaseStream.Position), bufMaxSize);
-				int bufPos = (int)_buf.BaseStream.Position;
+				var bufMaxSize = 1024;
+				var bufSize = Math.Min((int)(_buf.BaseStream.Length - _buf.BaseStream.Position), bufMaxSize);
+				var bufPos = (int)_buf.BaseStream.Position;
 
-				byte[] tmp = new byte[bufSize];
+				var tmp = new byte[bufSize];
 
 				while (dest.Remaining > 0)
 				{
-					int length = Math.Min(dest.Remaining, tmp.Length);
+					var length = Math.Min(dest.Remaining, tmp.Length);
 					_buf.Read(tmp, 0, length);
 					dest.Put(tmp, 0, length);
 				}
@@ -242,7 +241,7 @@ namespace csmatio.io
 			{
 				// Because Matlab writes data not respectively to the declared
 				// matrix type, the reading is not straight forward (as above)
-				Type clazz = storage.GetStorageType;
+				var clazz = storage.GetStorageType;
 				while (dest.Remaining > 0)
 				{
 					if (clazz.Equals(typeof(double)))

@@ -1,10 +1,7 @@
+using System.IO;
+
 namespace csmatio.common
 {
-	using System;
-	using System.Collections.Generic;
-	using System.IO;
-	using System.Text;
-
 	/// <summary>
 	/// common static helper methods
 	/// </summary>
@@ -28,7 +25,7 @@ namespace csmatio.common
 		/// <param name="bufsize">size of the copy buffer</param>
 		public static void CopyStream(Stream input, Stream output, int bufsize)
 		{
-			byte[] buffer = new byte[bufsize];
+			var buffer = new byte[bufsize];
 			int numBytesRead;
 			while ((numBytesRead = input.Read(buffer, 0, buffer.Length)) > 0)
 			{
@@ -46,12 +43,12 @@ namespace csmatio.common
 		/// <returns>Array of Type T[]</returns>
 		public static T[] Array2DTo1D<T>(T[][] array2D)
 		{
-			int numRows = array2D.Length;
-			int numCols = array2D[0].Length;
-			T[] array1D = new T[numRows * numCols];
-			for (int i = 0; i < numCols; ++i)
+			var numRows = array2D.Length;
+			var numCols = array2D[0].Length;
+			var array1D = new T[numRows * numCols];
+			for (var i = 0; i < numCols; ++i)
 			{
-				for (int j = 0; j < numRows; ++j)
+				for (var j = 0; j < numRows; ++j)
 				{
 					array1D[j + i * numRows] = array2D[j][i];
 				}

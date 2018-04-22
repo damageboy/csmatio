@@ -1,4 +1,3 @@
-using System;
 using csmatio.common;
 
 namespace csmatio.io
@@ -53,7 +52,7 @@ namespace csmatio.io
 		}
 
 		/// <summary>
-		/// <see cref="Object.ToString()"/>
+		/// <see cref="object.ToString()"/>
 		/// </summary>
 		public override string ToString()
 		{
@@ -66,26 +65,16 @@ namespace csmatio.io
 		/// Get size of single data in this tag.
 		/// </summary>
 		/// <returns>The number of bytes for single data</returns>
-		public int SizeOf()
-		{
-			return MatDataTypes.SizeOf( _type );
-		}
+		public int SizeOf() => MatDataTypes.SizeOf( _type );
 
-        /// <summary>
+		/// <summary>
         /// Get the type of the MatTag
         /// </summary>
-        public int Type
-        {
-            get { return _type; }
-        }
+        public int Type => _type;
 
-        /// <summary>
+		/// <summary>
         /// Get the number of bytes for the MAT-Data object
         /// </summary>
-        public int Size
-        {
-            get { return _size; }
-        }
-
+        public int Size => _size;
 	}
 }

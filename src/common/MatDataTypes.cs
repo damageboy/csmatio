@@ -1,5 +1,3 @@
-using System;
-
 namespace csmatio.common
 {
 	/// <summary>
@@ -85,31 +83,31 @@ namespace csmatio.common
 		{
 			switch( type )
 			{
-				case MatDataTypes.miINT8:
+				case miINT8:
 					return miSIZE_INT8;
-				case MatDataTypes.miUINT8:
+				case miUINT8:
 					return miSIZE_UINT8;
-				case MatDataTypes.miINT16:
+				case miINT16:
 					return miSIZE_INT16;
-				case MatDataTypes.miUINT16:
+				case miUINT16:
 					return miSIZE_UINT16;
-				case MatDataTypes.miINT32:
+				case miINT32:
 					return miSIZE_INT32;
-				case MatDataTypes.miUINT32:
+				case miUINT32:
 					return miSIZE_UINT32;
-				case MatDataTypes.miINT64:
+				case miINT64:
 					return miSIZE_INT64;
-				case MatDataTypes.miUINT64:
+				case miUINT64:
 					return miSIZE_UINT64;
-				case MatDataTypes.miDOUBLE:
+				case miDOUBLE:
 					return miSIZE_DOUBLE;
-				case MatDataTypes.miSINGLE:
+				case miSINGLE:
 					return miSIZE_SINGLE;
-                case MatDataTypes.miUTF8:
+                case miUTF8:
                     return miSIZE_UTF8;
-                case MatDataTypes.miUTF16:
+                case miUTF16:
                     return miSIZE_UTF16;
-                case MatDataTypes.miUTF32:
+                case miUTF32:
                     return miSIZE_UTF32;
                 default:
 					return 1;
@@ -125,37 +123,37 @@ namespace csmatio.common
 		{
 			switch( type )
 			{
-				case MatDataTypes.miUNKNOWN:
+				case miUNKNOWN:
 					return "unknown";
-				case MatDataTypes.miINT8:
+				case miINT8:
 					return "int8";
-				case MatDataTypes.miINT16:
+				case miINT16:
 					return "int16";
-				case MatDataTypes.miINT32:
+				case miINT32:
 					return "int32";
-				case MatDataTypes.miUINT8:
+				case miUINT8:
 					return "uint8";
-				case MatDataTypes.miUINT16:
+				case miUINT16:
 					return "uint16";
-				case MatDataTypes.miUINT32:
+				case miUINT32:
 					return "uint32";
-				case MatDataTypes.miSINGLE:
+				case miSINGLE:
 					return "single";
-				case MatDataTypes.miDOUBLE:
+				case miDOUBLE:
 					return "double";
-				case MatDataTypes.miINT64:
+				case miINT64:
 					return "int64";
-				case MatDataTypes.miUINT64:
+				case miUINT64:
 					return "uint64";
-				case MatDataTypes.miMATRIX:
+				case miMATRIX:
 					return "matrix";
-				case MatDataTypes.miCOMPRESSED:
+				case miCOMPRESSED:
 					return "compressed";
-				case MatDataTypes.miUTF8:
+				case miUTF8:
 					return "utf8";
-				case MatDataTypes.miUTF16:
+				case miUTF16:
 					return "utf16";
-				case MatDataTypes.miUTF32:
+				case miUTF32:
 					return "utf32";
 				default:
 					return "unknown";

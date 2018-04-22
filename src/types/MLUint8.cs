@@ -1,4 +1,3 @@
-using System;
 using csmatio.common;
 
 namespace csmatio.types
@@ -27,7 +26,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="Dims">Array dimensions</param>
 		public MLUInt8(string Name, int[] Dims)
-			: base(Name, Dims, MLArray.mxUINT8_CLASS, 0) { }
+			: base(Name, Dims, mxUINT8_CLASS, 0) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -37,7 +36,7 @@ namespace csmatio.types
 		/// <param name="vals">One-dimensional array of doubles, packed by columns</param>
 		/// <param name="m">Number of rows</param>
 		public MLUInt8(string Name, byte[] vals, int m)
-			: base(Name, MLArray.mxUINT8_CLASS, vals, m) { }
+			: base(Name, mxUINT8_CLASS, vals, m) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -47,7 +46,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="vals">Two-dimensional array of values</param>
 		public MLUInt8(string Name, byte[][] vals)
-			: this(Name, Helpers.Array2DTo1D<byte>(vals), vals.Length) { }
+			: this(Name, Helpers.Array2DTo1D(vals), vals.Length) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -58,7 +57,7 @@ namespace csmatio.types
 		/// <param name="Imag">One-dimensional array of <c>byte</c> for <i>imaginary</i> values, packed by columns</param>
 		/// <param name="M">Number of rows</param>
 		public MLUInt8(string Name, byte[] Real, byte[] Imag, int M)
-			: base(Name, MLArray.mxUINT8_CLASS, Real, Imag, M) { }
+			: base(Name, mxUINT8_CLASS, Real, Imag, M) { }
 
 
 		/// <summary>
@@ -69,7 +68,7 @@ namespace csmatio.types
 		/// <param name="Real">One-dimensional array of <c>byte</c> for <i>real</i> values, packed by columns</param>
 		/// <param name="Imag">One-dimensional array of <c>byte</c> for <i>imaginary</i> values, packed by columns</param>
 		public MLUInt8(string Name, byte[][] Real, byte[][] Imag)
-			: this(Name, Helpers.Array2DTo1D<byte>(Real), Helpers.Array2DTo1D<byte>(Imag), Real.Length) { }
+			: this(Name, Helpers.Array2DTo1D(Real), Helpers.Array2DTo1D(Imag), Real.Length) { }
 
 		#endregion
 
@@ -78,21 +77,13 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="bytes">A byte array containing the data.</param>
 		/// <returns>A numeric object</returns>
-		protected override object BuildFromBytes2(byte[] bytes)
-		{
-			////return BitConverter.ToUInt8(bytes, 0);
-			return bytes[0]; // faster than Bitconverter?
-		}
+		protected override object BuildFromBytes2(byte[] bytes) => bytes[0];
 
 		/// <summary>
 		/// Gets a byte array from a numeric object.
 		/// </summary>
 		/// <param name="val">The numeric object to convert into a byte array.</param>
-		public override byte[] GetByteArray(object val)
-		{
-			////return BitConverter.GetBytes((byte)val); BitConverter returns 2 bytes -> doesnt work this way
-			return new byte[] { (byte)val }; // faster than Bitconverter?
-		}
+		public override byte[] GetByteArray(object val) => new[] { (byte)val };
 
 		/// <summary>
 		/// Gets a single objects data from a <c>ByteBuffer</c>.
@@ -101,10 +92,7 @@ namespace csmatio.types
 		/// <param name="Buffer">The <c>ByteBuffer</c> object.</param>
 		/// <param name="Index">A column-packed index.</param>
 		/// <returns>The object data.</returns>
-		protected override byte _Get(ByteBuffer Buffer, int Index)
-		{
-			return Buffer.Get(Index);
-		}
+		protected override byte _Get(ByteBuffer Buffer, int Index) => Buffer.Get(Index);
 	}
 }
 

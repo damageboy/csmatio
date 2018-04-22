@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace csmatio.common
 {
@@ -10,8 +11,8 @@ namespace csmatio.common
 	/// <author>David Zier (david.zier@gmail.com)</author>
 	public class ByteBuffer
 	{
-		private byte[] _bytes;
-		private int _pos;
+		readonly byte[] _bytes;
+	  int _pos;
 
 		/// <summary>
 		/// Create a new <c>ByteBuffer</c> object.
@@ -51,18 +52,12 @@ namespace csmatio.common
 		/// Indicates the amount of bytes remaining in the buffer.
 		/// </summary>
 		/// <returns>The amount of bytes remaining</returns>
-		public int Remaining
-		{
-			get { return _bytes.Length - _pos; }
-		}
+		public int Remaining => _bytes.Length - _pos;
 
 		/// <summary>
 		/// Does the <c>ByteBuffer</c> have any bytes remaining?
 		/// </summary>
-		public bool HasRemaining
-		{
-			get { return Remaining > 0; }
-		}
+		public bool HasRemaining => Remaining > 0;
 
 		/// <summary>
 		/// Set the relative position marker to a specific index within the buffer.
@@ -92,10 +87,7 @@ namespace csmatio.common
 		/// <summary>
 		/// Get the total limit to the byte buffer
 		/// </summary>
-		public int Limit
-		{
-			get { return this._bytes.Length; }
-		}
+		public int Limit => _bytes.Length;
 
 		/// <summary>
 		/// Resets the relative position marker to the beginning of the buffer.
@@ -279,9 +271,9 @@ namespace csmatio.common
 		/// <returns>A summary string.</returns>
 		public override string ToString()
 		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			var sb = new StringBuilder();
 
-			for (int i = 0; i < _bytes.Length; i++)
+			for (var i = 0; i < _bytes.Length; i++)
 			{
 				sb.Append(_bytes[i].ToString("x2"));
 				if (i < _bytes.Length - 1)
@@ -300,7 +292,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 2)
 				throw new OverflowException("There are fewer than two bytes remaining in this buffer");
 
-			char ret = BitConverter.ToChar(_bytes, _pos);
+			var ret = BitConverter.ToChar(_bytes, _pos);
 			_pos += 2;
 
 			return ret;
@@ -316,7 +308,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 2)
 				throw new OverflowException("There are fewer than two bytes remaining in this buffer");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, _pos, src.Length);
 			_pos += src.Length;
 
@@ -333,7 +325,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 2)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			char ret = BitConverter.ToChar(_bytes, index);
+			var ret = BitConverter.ToChar(_bytes, index);
 
 			return ret;
 		}
@@ -349,7 +341,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 2)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, index, src.Length);
 
 			return this;
@@ -364,7 +356,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 2)
 				throw new OverflowException("There are fewer than two bytes remaining in this buffer");
 
-			short ret = BitConverter.ToInt16(_bytes, _pos);
+			var ret = BitConverter.ToInt16(_bytes, _pos);
 			_pos += 2;
 
 			return ret;
@@ -380,7 +372,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 2)
 				throw new OverflowException("There are fewer than two bytes remaining in this buffer");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, _pos, src.Length);
 			_pos += src.Length;
 
@@ -397,7 +389,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 2)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			short ret = BitConverter.ToInt16(_bytes, index);
+			var ret = BitConverter.ToInt16(_bytes, index);
 
 			return ret;
 		}
@@ -413,7 +405,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 2)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, index, src.Length);
 
 			return this;
@@ -428,7 +420,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 4)
 				throw new OverflowException("There are fewer than four bytes remaining in this buffer");
 
-			int ret = BitConverter.ToInt32(_bytes, _pos);
+			var ret = BitConverter.ToInt32(_bytes, _pos);
 			_pos += 4;
 
 			return ret;
@@ -444,7 +436,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 4)
 				throw new OverflowException("There are fewer than four bytes remaining in this buffer");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, _pos, src.Length);
 			_pos += src.Length;
 
@@ -461,7 +453,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 4)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			int ret = BitConverter.ToInt32(_bytes, index);
+			var ret = BitConverter.ToInt32(_bytes, index);
 
 			return ret;
 		}
@@ -477,7 +469,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 4)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, index, src.Length);
 
 			return this;
@@ -492,7 +484,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 8)
 				throw new OverflowException("There are fewer than eight bytes remaining in this buffer");
 
-			long ret = BitConverter.ToInt64(_bytes, _pos);
+			var ret = BitConverter.ToInt64(_bytes, _pos);
 			_pos += 8;
 
 			return ret;
@@ -508,7 +500,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 8)
 				throw new OverflowException("There are fewer than eight bytes remaining in this buffer");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, _pos, src.Length);
 			_pos += src.Length;
 
@@ -525,7 +517,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 8)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			long ret = BitConverter.ToInt64(_bytes, index);
+			var ret = BitConverter.ToInt64(_bytes, index);
 
 			return ret;
 		}
@@ -541,7 +533,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 8)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, index, src.Length);
 
 			return this;
@@ -556,7 +548,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 4)
 				throw new OverflowException("There are fewer than four bytes remaining in this buffer");
 
-			float ret = BitConverter.ToSingle(_bytes, _pos);
+			var ret = BitConverter.ToSingle(_bytes, _pos);
 			_pos += 4;
 
 			return ret;
@@ -572,7 +564,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 4)
 				throw new OverflowException("There are fewer than four bytes remaining in this buffer");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, _pos, src.Length);
 			_pos += src.Length;
 
@@ -589,7 +581,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 4)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			float ret = BitConverter.ToSingle(_bytes, index);
+			var ret = BitConverter.ToSingle(_bytes, index);
 
 			return ret;
 		}
@@ -605,7 +597,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 4)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, index, src.Length);
 
 			return this;
@@ -620,7 +612,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 8)
 				throw new OverflowException("There are fewer than eight bytes remaining in this buffer");
 
-			double ret = BitConverter.ToDouble(_bytes, _pos);
+			var ret = BitConverter.ToDouble(_bytes, _pos);
 			_pos += 8;
 
 			return ret;
@@ -636,7 +628,7 @@ namespace csmatio.common
 			if (_pos > _bytes.Length - 8)
 				throw new OverflowException("There are fewer than eight bytes remaining in this buffer");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, _pos, src.Length);
 			_pos += src.Length;
 
@@ -653,7 +645,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 8)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			double ret = BitConverter.ToDouble(_bytes, index);
+			var ret = BitConverter.ToDouble(_bytes, index);
 
 			return ret;
 		}
@@ -669,7 +661,7 @@ namespace csmatio.common
 			if (index < 0 || index > _bytes.Length - 8)
 				throw new IndexOutOfRangeException("The index is either negative or larger than the buffer's limit.");
 
-			byte[] src = BitConverter.GetBytes(val);
+			var src = BitConverter.GetBytes(val);
 			System.Array.Copy(src, 0, _bytes, index, src.Length);
 
 			return this;

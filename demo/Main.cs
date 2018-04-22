@@ -1,56 +1,52 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.IO;
 using System.Windows.Forms;
-
-using csmatio.types;
 using csmatio.io;
+using csmatio.types;
 
 namespace CSMatIOTest
 {
     public partial class Main : Form
     {
-		private bool toggleCheck = false;
+      bool toggleCheck;
 
         public Main()
         {
             InitializeComponent();
         }
 
-        private void btnRead_Click(object sender, EventArgs e)
+      void btnRead_Click(object sender, EventArgs e)
         {
             DialogResult dRes = openFileDialog.ShowDialog();
             if (dRes == DialogResult.OK)
             {
-                string fileName = openFileDialog.FileName;
+                var fileName = openFileDialog.FileName;
 
                 txtOutput.Text = txtOutput.Text + "Attempting to read the file '" + fileName + "'...";
                 try
                 {
-                    MatFileReader mfr = new MatFileReader(fileName);
+                    var mfr = new MatFileReader(fileName);
                     txtOutput.Text += "Done!\nMAT-file contains the following:\n";
-                    txtOutput.Text += mfr.MatFileHeader.ToString() + "\n";
-                    foreach (MLArray mla in mfr.Data)
+                    txtOutput.Text += mfr.MatFileHeader + "\n";
+                    foreach (var mla in mfr.Data)
                     {
                         txtOutput.Text = txtOutput.Text + mla.ContentToString() + "\n";
                     }
                 }
-                catch (System.IO.IOException)
+                catch (IOException)
                 {
                     txtOutput.Text = txtOutput.Text + "Invalid MAT-file!\n";
                     MessageBox.Show("Invalid binary MAT-file! Please select a valid binary MAT-file.",
                         "Invalid MAT-file", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
-                    
+
             }
         }
 
-        private void btnCreate_Click(object sender, EventArgs e)
+      void btnCreate_Click(object sender, EventArgs e)
         {
-            List<MLArray> mlList = new List<MLArray>();
+            var mlList = new List<MLArray>();
             // Go through each of the options to add in the file
             if (chkCell.Checked)
             {
@@ -123,28 +119,28 @@ namespace CSMatIOTest
 
             // Get a filename name to write the file out to
             saveFileDialog.ShowDialog();
-            string filename = saveFileDialog.FileName;
+            var filename = saveFileDialog.FileName;
 
             txtOutput.Text += "Creating the MAT-file '" + filename + "'...";
 
             try
             {
-                MatFileWriter mfw = new MatFileWriter(filename, mlList, chkCompress.Checked);
+                var mfw = new MatFileWriter(filename, mlList, chkCompress.Checked);
             }
             catch (Exception err)
             {
-                MessageBox.Show("There was an error when creating the MAT-file: \n" + err.ToString(),
+                MessageBox.Show("There was an error when creating the MAT-file: \n" + err,
                     "MAT-File Creation Error!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 txtOutput.Text += "Failed!\n";
                 return;
             }
 
             txtOutput.Text += "Done!\nMAT-File created with the following data: \n";
-            foreach (MLArray mla in mlList)
-                txtOutput.Text += mla.ContentToString() + "\n";    
+            foreach (var mla in mlList)
+                txtOutput.Text += mla.ContentToString() + "\n";
         }
 
-		private void btnCheckEmAll_Click(object sender, EventArgs e)
+      void btnCheckEmAll_Click(object sender, EventArgs e)
 		{
 			toggleCheck = !toggleCheck;
 
@@ -166,105 +162,88 @@ namespace CSMatIOTest
 			toggleCheck;
 		}
 
-        private static MLArray CreateCellArray()
+      static MLArray CreateCellArray()
         {
-            string[] names = new string[] { "Hello", "World", "I am", "a", "MAT-file" };
-            MLCell cell = new MLCell("Names", new int[] { names.Length, 1 });
-            for (int i = 0; i < names.Length; i++)
+            var names = new[] { "Hello", "World", "I am", "a", "MAT-file" };
+            var cell = new MLCell("Names", new[] { names.Length, 1 });
+            for (var i = 0; i < names.Length; i++)
                 cell[i] = new MLChar(null, names[i]);
             return cell;
         }
 
-        private static MLArray CreateStructArray()
+      static MLArray CreateStructArray()
         {
-            MLStructure structure = new MLStructure("X", new int[] { 1, 1 });
+            var structure = new MLStructure("X", new[] { 1, 1 });
             structure["w", 0] = new MLUInt8("", new byte[] { 1 }, 1);
             structure["y", 0] = new MLUInt8("", new byte[] { 2 }, 1);
             structure["z", 0] = new MLUInt8("", new byte[] { 3 }, 1);
             return structure;
         }
 
-        private static MLArray CreateCharArray()
+      static MLArray CreateCharArray()
         {
-#if NET20
-            return new MLChar("AName", "Hello World v2.0!");
-#endif
-#if NET40
-			return new MLChar("AName", "Hello World v4.0!");
-#endif
+			    return new MLChar("AName", "Hello World v4.0!");
         }
 
-        private static MLArray CreateSparseArray()
+      static MLArray CreateSparseArray()
         {
-            MLSparse sparse = new MLSparse("S", new int[] { 3, 3 }, 0, 3);
+            var sparse = new MLSparse("S", new[] { 3, 3 }, 0, 3);
             sparse.SetReal(1.5, 0, 0);
             sparse.SetReal(2.5, 1, 1);
             sparse.SetReal(3.5, 2, 2);
             return sparse;
         }
 
-        private static MLArray CreateDoubleArray()
+      static MLArray CreateDoubleArray() => new MLDouble("Double", new[] { double.MaxValue, double.MinValue }, 1);
+
+      static MLArray CreateSingleArray() => new MLSingle("Single", new[] { float.MinValue, float.MaxValue }, 1);
+
+      static MLArray CreateInt8Array() => new MLInt8("Int8", new[] { sbyte.MinValue, sbyte.MaxValue }, 1);
+
+      static MLArray CreateUInt8Array() => new MLUInt8("UInt8", new[] { byte.MinValue, byte.MaxValue }, 1);
+
+      static MLArray CreateInt16Array()
         {
-            return new MLDouble("Double", new double[] { double.MaxValue, double.MinValue }, 1);
+            return new MLInt16("Int16", new[] { short.MinValue, short.MaxValue }, 1);
         }
 
-        private static MLArray CreateSingleArray()
+      static MLArray CreateUInt16Array()
         {
-            return new MLSingle("Single", new float[] { float.MinValue, float.MaxValue }, 1);
+            return new MLUInt16("UInt16", new[] { ushort.MinValue, ushort.MaxValue }, 1);
         }
 
-        private static MLArray CreateInt8Array()
+      static MLArray CreateInt32Array()
         {
-            return new MLInt8("Int8", new sbyte[] { sbyte.MinValue, sbyte.MaxValue }, 1);
+            return new MLInt32("Int32", new[] { int.MinValue, int.MaxValue }, 1);
         }
 
-        private static MLArray CreateUInt8Array()
+      static MLArray CreateUIn32Array()
         {
-            return new MLUInt8("UInt8", new byte[] { byte.MinValue, byte.MaxValue }, 1);
+            return new MLUInt32("UInt32", new[] { uint.MinValue, uint.MaxValue }, 1);
         }
 
-        private static MLArray CreateInt16Array()
+      static MLArray CreateInt64Array()
         {
-            return new MLInt16("Int16", new short[] { short.MinValue, short.MaxValue }, 1);
+            return new MLInt64("Int64", new[] { long.MinValue, long.MaxValue }, 1);
         }
 
-        private static MLArray CreateUInt16Array()
+      static MLArray CreateUInt64Array()
         {
-            return new MLUInt16("UInt16", new ushort[] { ushort.MinValue, ushort.MaxValue }, 1);
+            return new MLUInt64("UInt64", new[] { ulong.MinValue, ulong.MaxValue }, 1);
         }
 
-        private static MLArray CreateInt32Array()
-        {
-            return new MLInt32("Int32", new int[] { int.MinValue, int.MaxValue }, 1);
-        }
-
-        private static MLArray CreateUIn32Array()
-        {
-            return new MLUInt32("UInt32", new uint[] { uint.MinValue, uint.MaxValue }, 1);
-        }
-
-        private static MLArray CreateInt64Array()
-        {
-            return new MLInt64("Int64", new long[] { long.MinValue, long.MaxValue }, 1);
-        }
-
-        private static MLArray CreateUInt64Array()
-        {
-            return new MLUInt64("UInt64", new ulong[] { ulong.MinValue, ulong.MaxValue }, 1);
-        }
-
-        private static MLArray CreateImaginaryArray()
+      static MLArray CreateImaginaryArray()
         {
             // Create a large, randomaly generated imaginary array
-            long[] myRealNums = new long[2000];
-            long[] myImagNums = new long[2000];
-            Random numGen = new Random();
-            for (int i = 0; i < myRealNums.Length; i++)
+            var myRealNums = new long[2000];
+            var myImagNums = new long[2000];
+            var numGen = new Random();
+            for (var i = 0; i < myRealNums.Length; i++)
             {
-                myRealNums[i] = (long)numGen.Next(int.MinValue, int.MaxValue);
-                myImagNums[i] = (long)numGen.Next(int.MinValue, int.MaxValue);
+                myRealNums[i] = numGen.Next(int.MinValue, int.MaxValue);
+                myImagNums[i] = numGen.Next(int.MinValue, int.MaxValue);
             }
-            MLInt64 myImagArray =
+            var myImagArray =
                 new MLInt64("IA", myRealNums, myImagNums, myRealNums.Length / 5);
             return myImagArray;
         }

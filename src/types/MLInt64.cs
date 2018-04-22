@@ -8,7 +8,7 @@ namespace csmatio.types
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Davids original comment: 
+	/// Davids original comment:
 	/// For some reason, Matlab sees the <c>mxINT64</c> class as an array of
 	/// doubles, so in order to get this to work, <c>MLInt64</c> actually converts
 	/// all of the long data to doubles.
@@ -38,7 +38,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="Dims">Array dimensions</param>
 		public MLInt64(string Name, int[] Dims)
-			: base(Name, Dims, MLArray.mxINT64_CLASS, 0) { }
+			: base(Name, Dims, mxINT64_CLASS, 0) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -48,7 +48,7 @@ namespace csmatio.types
 		/// <param name="vals">One-dimensional array of <c>long</c>, packed by columns</param>
 		/// <param name="m">Number of rows</param>
 		public MLInt64(string Name, long[] vals, int m)
-			: base(Name, MLArray.mxINT64_CLASS, vals, m) { }
+			: base(Name, mxINT64_CLASS, vals, m) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -58,7 +58,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="vals">Two-dimensional array of values</param>
 		public MLInt64(string Name, long[][] vals)
-			: this(Name, Helpers.Array2DTo1D<long>(vals), vals.Length) { }
+			: this(Name, Helpers.Array2DTo1D(vals), vals.Length) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -69,7 +69,7 @@ namespace csmatio.types
 		/// <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
 		/// <param name="M">Number of rows</param>
 		public MLInt64(string Name, long[] Real, long[] Imag, int M)
-			: base(Name, MLArray.mxINT64_CLASS, Real, Imag, M) { }
+			: base(Name, mxINT64_CLASS, Real, Imag, M) { }
 
 
 		/// <summary>
@@ -80,7 +80,7 @@ namespace csmatio.types
 		/// <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
 		/// <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
 		public MLInt64(string Name, long[][] Real, long[][] Imag)
-			: this(Name, Helpers.Array2DTo1D<long>(Real), Helpers.Array2DTo1D<long>(Imag), Real.Length) { }
+			: this(Name, Helpers.Array2DTo1D(Real), Helpers.Array2DTo1D(Imag), Real.Length) { }
 
 		#endregion
 
@@ -89,18 +89,12 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="bytes">A byte array containing the data.</param>
 		/// <returns>A numeric object</returns>
-		protected override object BuildFromBytes2(byte[] bytes)
-		{
-			return BitConverter.ToInt64(bytes, 0);
-		}
+		protected override object BuildFromBytes2(byte[] bytes) => BitConverter.ToInt64(bytes, 0);
 
 		/// <summary>
 		/// Gets a byte array from a numeric object.
 		/// </summary>
 		/// <param name="val">The numeric object to convert into a byte array.</param>
-		public override byte[] GetByteArray(object val)
-		{
-			return BitConverter.GetBytes((long)val);
-		}
+		public override byte[] GetByteArray(object val) => BitConverter.GetBytes((long)val);
 	}
 }

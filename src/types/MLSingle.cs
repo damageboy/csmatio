@@ -27,7 +27,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="Dims">Array dimensions</param>
 		public MLSingle(string Name, int[] Dims)
-			: base(Name, Dims, MLArray.mxSINGLE_CLASS, 0) { }
+			: base(Name, Dims, mxSINGLE_CLASS, 0) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -37,7 +37,7 @@ namespace csmatio.types
 		/// <param name="vals">One-dimensional array of floats, packed by columns</param>
 		/// <param name="m">Number of rows</param>
 		public MLSingle(string Name, float[] vals, int m)
-			: base(Name, MLArray.mxSINGLE_CLASS, vals, m) { }
+			: base(Name, mxSINGLE_CLASS, vals, m) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -47,7 +47,7 @@ namespace csmatio.types
 		/// <param name="Name">Array name</param>
 		/// <param name="vals">Two-dimensional array of values</param>
 		public MLSingle(string Name, float[][] vals)
-			: this(Name, Helpers.Array2DTo1D<float>(vals), vals.Length) { }
+			: this(Name, Helpers.Array2DTo1D(vals), vals.Length) { }
 
 		/// <summary>
 		/// <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
@@ -58,7 +58,7 @@ namespace csmatio.types
 		/// <param name="Imag">One-dimensional array of float for <i>imaginary</i> values, packed by columns</param>
 		/// <param name="M">Number of rows</param>
 		public MLSingle(string Name, float[] Real, float[] Imag, int M)
-			: base(Name, MLArray.mxSINGLE_CLASS, Real, Imag, M) { }
+			: base(Name, mxSINGLE_CLASS, Real, Imag, M) { }
 
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace csmatio.types
 		/// <param name="Real">array of arrays of float for <i>real</i> values</param>
 		/// <param name="Imag">array of arrays of float for <i>imaginary</i> values</param>
 		public MLSingle(string Name, float[][] Real, float[][] Imag)
-			: this(Name, Helpers.Array2DTo1D<float>(Real), Helpers.Array2DTo1D<float>(Imag), Real.Length) { }
+			: this(Name, Helpers.Array2DTo1D(Real), Helpers.Array2DTo1D(Imag), Real.Length) { }
 
 		#endregion
 
@@ -78,18 +78,12 @@ namespace csmatio.types
 		/// </summary>
 		/// <param name="bytes">A byte array containing the data.</param>
 		/// <returns>A numeric object</returns>
-		protected override object BuildFromBytes2(byte[] bytes)
-		{
-			return BitConverter.ToSingle(bytes, 0);
-		}
+		protected override object BuildFromBytes2(byte[] bytes) => BitConverter.ToSingle(bytes, 0);
 
 		/// <summary>
 		/// Gets a byte array from a numeric object.
 		/// </summary>
 		/// <param name="val">The numeric object to convert into a byte array.</param>
-		public override byte[] GetByteArray(object val)
-		{
-			return BitConverter.GetBytes((float)val);
-		}
+		public override byte[] GetByteArray(object val) => BitConverter.GetBytes((float)val);
 	}
 }
